@@ -1,0 +1,83 @@
+/**
+ *
+ * (c) Copyright Ascensio System SIA 2025
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
+
+.onlyoffice-template-container {
+  margin-left: 0 !important;
+  max-width: 500px;
+}
+
+.onlyoffice-template-container li {
+  height: 27px;
+  padding-top: 5px;
+}
+
+.onlyoffice-template-container.container-dialog li:hover,
+.onlyoffice-template-item.selected {
+  background-color: rgb(230 230 230);
+}
+
+.onlyoffice-template-item img,
+.onlyoffice-template-item p,
+.onlyoffice-template-delete,
+.onlyoffice-template-download {
+  cursor: pointer;
+  display: inline-block;
+  margin-right: 10px;
+}
+
+.onlyoffice-template-item.item-dialog {
+  padding-left: 5px;
+}
+
+.onlyoffice-template-delete,
+.onlyoffice-template-download {
+  margin-bottom: 2px;
+  opacity: 0.8;
+}
+
+.onlyoffice-template-item p {
+  max-width: 400px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.onlyoffice-template-item img {
+  float: left;
+  margin-top: 3px;
+}
+
+.onlyoffice-template-item.selected label {
+  color: rgb(55 137 243);
+}
+
+.onlyoffice-template-download {
+  background-image: url("../../../core/img/actions/download.svg");
+  height: 16px;
+  width: 16px;
+}
+
+.onlyoffice-template.icon-add {
+  opacity: 0.5;
+  padding-bottom: 5px;
+  padding-left: 35px;
+}
+
+.onlyoffice-template.icon-add:hover {
+  opacity: 0.7;
+}

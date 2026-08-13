@@ -1,0 +1,47 @@
+﻿<?xml version="1.0"?>
+<info>
+    <id>onlyoffice</id>
+    <name>ONLYOFFICE</name>
+    <summary>ONLYOFFICE connector</summary>
+    <description><![CDATA[
+Unlock seamless collaboration with the ONLYOFFICE app for ownCloud. With this powerful integration, you can create, edit, and co-author text documents, spreadsheets, and presentations directly in your ownCloud. Enjoy advanced functionalities like building and filling out PDF forms, annotating PDFs, and converting non-OOXML files into widely-used OOXML formats.
+
+Empower collaboration with real-time co-editing, track changes, version history, and integrated chat features for effortless teamwork. Customize access permissions to control who can view, edit, or comment on documents, ensuring secure and role-based access for every participant. Add extra layers of protection with watermarks, passwords, and restricted content copying to safeguard your data.
+
+The ONLYOFFICE app for ownCloud supports over 50 file formats, including DOCX, XLSX, PPTX, PDF, RTF, TXT, CSV, ODT, ODS, ODP, EPUB, FB2, HTML, HWP, HWPX, Pages, Numbers, Keynote, etc., making any file accessible with ease. Integration is seamless across platforms, with support for desktop and mobile apps so you can access your files anytime, anywhere.
+
+Simplify your workflows with easy configuration through the ownCloud Admin Panel and leverage features like federated cloud sharing, and interface customization.
+
+Moreover, any AI assistant, including local ones, can be effortlessly connected right to the editors to boost speed and efficiency. This enables the use of diverse AI models for tasks such as chatbot interactions, translations, OCR, and more.
+]]></description>
+    <licence>apl2</licence>
+    <author>Ascensio System SIA</author>
+    <version>9.12.1</version>
+    <namespace>Onlyoffice</namespace>
+    <types>
+        <filesystem/>
+    </types>
+    <documentation>
+        <admin>https://helpcenter.onlyoffice.com/integration/owncloud.aspx</admin>
+        <user>https://helpcenter.onlyoffice.com/integration/owncloud.aspx</user>
+        <developer>https://github.com/ONLYOFFICE/onlyoffice-owncloud</developer>
+    </documentation>
+    <category>tools</category>
+    <website>https://www.onlyoffice.com</website>
+    <bugs>https://github.com/ONLYOFFICE/onlyoffice-owncloud/issues</bugs>
+    <repository type="git">https://github.com/ONLYOFFICE/onlyoffice-owncloud.git</repository>
+    <screenshot small-thumbnail="https://raw.githubusercontent.com/ONLYOFFICE/onlyoffice-owncloud/master/screenshots/main_small.png">https://raw.githubusercontent.com/ONLYOFFICE/onlyoffice-owncloud/master/screenshots/main.png</screenshot>
+    <screenshot>https://raw.githubusercontent.com/ONLYOFFICE/onlyoffice-owncloud/master/screenshots/settings.png</screenshot>
+    <screenshot>https://raw.githubusercontent.com/ONLYOFFICE/onlyoffice-owncloud/master/screenshots/new.png</screenshot>
+    <screenshot>https://raw.githubusercontent.com/ONLYOFFICE/onlyoffice-owncloud/master/screenshots/open.png</screenshot>
+    <screenshot>https://raw.githubusercontent.com/ONLYOFFICE/onlyoffice-owncloud/master/screenshots/open_form.png</screenshot>
+    <dependencies>
+        <owncloud min-version="10" max-version="10" />
+    </dependencies>
+    <commands>
+        <command>OCA\Onlyoffice\Command\DocumentServer</command>
+    </commands>
+    <background-jobs>
+        <job>OCA\Onlyoffice\Cron\EditorsCheck</job>
+    </background-jobs>
+</info>

@@ -1,0 +1,218 @@
+/**
+ *
+ * (c) Copyright Ascensio System SIA 2025
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
+
+#content .section-onlyoffice h2 .icon-info {
+  padding-top: 17px;
+}
+
+.onlyoffice-error {
+  color: #f00;
+}
+
+.onlyoffice-header {
+  display: inline-block;
+  margin-top: 16px;
+}
+
+.section-onlyoffice input {
+  display: block;
+  width: 250px;
+}
+
+.onlyoffice-hide {
+  display: none;
+}
+
+#onlyoffice-adv {
+  cursor: pointer;
+  text-decoration: none;
+}
+
+#onlyoffice-adv .icon {
+  display: inline-block;
+  margin-bottom: -3px;
+}
+
+#onlyoffice-addr-save {
+  float: left;
+}
+
+#onlyoffice-save {
+  margin-bottom: 25px;
+}
+
+.onlyoffice-demo {
+  margin-left: 90px;
+}
+
+#s2i-onlyoffice-limit-groups {
+  margin-bottom: 16px;
+}
+
+.onlyoffice-exts {
+  -moz-column-width: 100px;
+  -webkit-column-width: 100px;
+  column-width: 100px;
+}
+
+.onlyoffice-tables {
+  -moz-column-width: 140px;
+  -webkit-column-width: 140px;
+  column-width: 140px;
+}
+
+#personal-show + label {
+  margin-left: 230px;
+  margin-top: -25px;
+}
+
+.onlyoffice-option-desc {
+  margin-left: 20px;
+}
+
+#onlyoffice-docscloud-banner-wrapper {
+  background-color: #fff;
+  background-image: url("../img/get-editors-background.svg");
+  background-repeat: no-repeat;
+  border: 1px solid #efefef;
+  border-radius: 3px;
+  display: flex;
+  flex-direction: row;
+  margin-top: 10px;
+  max-width: 596px;
+  min-height: 108px;
+  text-align: center;
+}
+
+#onlyoffice-docscloud-banner-pic-wrapper {
+  height: 100%;
+  padding: 10px 0 0 20px;
+  width: 20%;
+}
+
+#onlyoffice-docscloud-banner-pic {
+  content: url("../img/get-editors-pic.svg");
+}
+
+#onlyoffice-docscloud-banner-content {
+  color: #000;
+  display: flex;
+  flex-direction: row;
+  height: 100%;
+  margin: auto;
+  width: 80%;
+}
+
+#onlyoffice-docscloud-banner-content-text {
+  color: #000;
+  font-size: 14px;
+  height: 100%;
+  padding-left: 15px;
+  text-align: justify;
+  width: 60%;
+}
+
+#onlyoffice-docscloud-banner-content-text h2 {
+  color: #000;
+  margin: 0;
+}
+
+#onlyoffice-docscloud-banner-content-button-wrapper {
+  height: 100%;
+  margin: auto;
+  width: 40%;
+}
+
+#onlyoffice-docscloud-banner-content-button {
+  background-color: #ededed;
+  border: 1px solid #dbdbdb;
+  color: #000;
+}
+
+.onlyoffice-description {
+  display: flex;
+  flex-direction: column;
+  margin: 24px 0;
+  row-gap: 11px;
+}
+
+.onlyoffice-description h1 {
+  font-size: 18px;
+  font-weight: 400;
+}
+
+.onlyoffice-description p {
+  font-size: 12px;
+  margin-bottom: 0 !important;
+}
+
+.onlyoffice-description .useful-links {
+  column-gap: 24px;
+  display: flex;
+}
+
+.onlyoffice-description .useful-links a {
+  display: flex;
+  font-size: 12px;
+  font-weight: 500;
+  gap: 4px;
+}
+
+.onlyoffice-description .useful-links a::after {
+  content: url("../img/top-right-arrow.svg");
+  height: 12px;
+  width: 12px;
+}
+
+@media (max-width: 580px) {
+  #onlyoffice-docscloud-banner-pic-wrapper {
+    padding: 20px 0 0 5px;
+    width: 30%;
+  }
+
+  #onlyoffice-docscloud-banner-content {
+    flex-direction: column;
+    width: 70%;
+  }
+
+  #onlyoffice-docscloud-banner-content-text {
+    padding-right: 5px;
+    width: 100%;
+  }
+
+  #onlyoffice-docscloud-banner-content-button-wrapper {
+    padding: 15px 0 15px 15px;
+    text-align: left;
+    width: 100%;
+  }
+}
+
+@media (max-width: 335px) {
+  #onlyoffice-docscloud-banner-wrapper {
+    flex-direction: column;
+  }
+
+  #onlyoffice-docscloud-banner-pic-wrapper {
+    padding: unset;
+    width: 100%;
+  }
+
+  #onlyoffice-docscloud-banner-content {
+    width: 100%;
+  }
+}
