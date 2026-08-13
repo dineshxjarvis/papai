@@ -2,6 +2,7 @@ import React, { useRef, useEffect } from "react";
 import { EditorContent } from "@tiptap/react";
 import { Sparkles } from "lucide-react";
 import PageNavigationSidebar from "../PageNavigation/PageNavigationSidebar";
+import MotionBackground from "../MotionBackground";
 import "./Editor.css";
 
 export default function DocumentEditor({
@@ -22,6 +23,24 @@ export default function DocumentEditor({
 }) {
   const scrollWrapperRef = useRef(null);
   const pageRefs = useRef([]);
+  const previousPagesLength = useRef(pages.length);
+
+  // Auto-scroll to newly added page when pages array length increases
+  useEffect(() => {
+    if (pages.length > previousPagesLength.current) {
+      const newPageIndex = pages.length - 1;
+      if (setActivePageIndex) setActivePageIndex(newPageIndex);
+      setTimeout(() => {
+        if (pageRefs.current[newPageIndex]) {
+          pageRefs.current[newPageIndex].scrollIntoView({
+            behavior: "smooth",
+            block: "start"
+          });
+        }
+      }, 50);
+    }
+    previousPagesLength.current = pages.length;
+  }, [pages.length, setActivePageIndex]);
 
   if (!editor) {
     return (
@@ -143,7 +162,16 @@ export default function DocumentEditor({
                     fontFamily: fontFamily || "Times New Roman",
                     fontSize: `${fontSize}pt`
                   }}
-                  onClick={handleEditorClick}
+                  onClick={(e) => {
+                    if (setActivePageIndex) setActivePageIndex(index);
+                    const sheetEl = document.getElementById(`page-sheet-${index}`);
+                    if (sheetEl) {
+                      sheetEl.classList.remove("liquid-click-anim");
+                      void sheetEl.offsetWidth;
+                      sheetEl.classList.add("liquid-click-anim");
+                    }
+                    handleEditorClick(e);
+                  }}
                 >
                   {/* Top Header Marker */}
                   <div className="page-header-marker">

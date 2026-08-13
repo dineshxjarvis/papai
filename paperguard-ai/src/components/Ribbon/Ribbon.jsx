@@ -373,22 +373,6 @@ export default function Ribbon({
             <div className="tool-group paragraph-group">
               <div className="format-buttons-row">
                 <button
-                  className={`format-btn ${editor.isActive("bulletList") ? "active" : ""}`}
-                  onClick={() => toggleBulletList(editor)}
-                  title="Bullet List"
-                >
-                  <List size={15} />
-                </button>
-
-                <button
-                  className={`format-btn ${editor.isActive("orderedList") ? "active" : ""}`}
-                  onClick={() => toggleOrderedList(editor)}
-                  title="Numbered List"
-                >
-                  <ListOrdered size={15} />
-                </button>
-
-                <button
                   className={`format-btn ${editor.isActive({ textAlign: "left" }) ? "active" : ""}`}
                   onClick={() => alignLeft(editor)}
                   title="Align Left"
@@ -413,11 +397,19 @@ export default function Ribbon({
                 </button>
 
                 <button
-                  className={`format-btn ${editor.isActive({ textAlign: "justify" }) ? "active" : ""}`}
-                  onClick={() => alignJustify(editor)}
-                  title="Justify"
+                  className={`format-btn ${editor.isActive("bulletList") ? "active" : ""}`}
+                  onClick={() => toggleBulletList(editor)}
+                  title="Bullet List"
                 >
-                  <AlignJustify size={15} />
+                  <List size={15} />
+                </button>
+
+                <button
+                  className={`format-btn ${editor.isActive("orderedList") ? "active" : ""}`}
+                  onClick={() => toggleOrderedList(editor)}
+                  title="Numbered List"
+                >
+                  <ListOrdered size={15} />
                 </button>
               </div>
               <label className="group-label">Paragraph</label>

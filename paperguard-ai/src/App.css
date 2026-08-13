@@ -7,8 +7,8 @@ html, body {
   padding: 0;
   height: 100%;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
-  background: #f8fafc;
-  color: #0f172a;
+  background: #7788c8;
+  color: #ffffff;
   overflow: hidden;
 }
 
@@ -16,13 +16,102 @@ button {
   font-family: inherit;
 }
 
-/* App Container */
+/* App Container - Motion Gradient Background Environment */
 .app-container {
   height: 100vh;
   display: flex;
   flex-direction: column;
   overflow: hidden;
   position: relative;
+  background: #7788c8;
+}
+
+/* Dynamic Liquid Motion Gradient Canvas */
+.motion-bg-container {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 0;
+  background: linear-gradient(
+    135deg,
+    #7788c8 0%,
+    #a0acd8 45%,
+    #8794cf 100%
+  );
+}
+
+.motion-orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(120px);
+  opacity: 0.45;
+  will-change: transform;
+}
+
+.orb-1 {
+  width: 650px;
+  height: 650px;
+  background: radial-gradient(circle, rgba(99, 102, 241, 0.65), transparent 70%);
+  top: -120px;
+  left: -120px;
+  animation: floatOrb1 18s ease-in-out infinite alternate;
+}
+
+.orb-2 {
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(circle, rgba(168, 85, 247, 0.55), transparent 70%);
+  top: 25%;
+  right: -120px;
+  animation: floatOrb2 22s ease-in-out infinite alternate;
+}
+
+.orb-3 {
+  width: 550px;
+  height: 550px;
+  background: radial-gradient(circle, rgba(244, 114, 182, 0.50), transparent 70%);
+  bottom: -100px;
+  left: 15%;
+  animation: floatOrb3 20s ease-in-out infinite alternate;
+}
+
+.orb-4 {
+  width: 500px;
+  height: 500px;
+  background: radial-gradient(circle, rgba(56, 189, 248, 0.50), transparent 70%);
+  top: 10%;
+  left: 35%;
+  animation: floatOrb4 24s ease-in-out infinite alternate;
+}
+
+@keyframes floatOrb1 {
+  0% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(140px, 90px) scale(1.18); }
+  100% { transform: translate(-70px, 160px) scale(0.92); }
+}
+
+@keyframes floatOrb2 {
+  0% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(-160px, 110px) scale(1.12); }
+  100% { transform: translate(90px, -70px) scale(0.88); }
+}
+
+@keyframes floatOrb3 {
+  0% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(110px, -100px) scale(1.22); }
+  100% { transform: translate(-140px, 60px) scale(0.82); }
+}
+
+@keyframes floatOrb4 {
+  0% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(-100px, 130px) scale(0.88); }
+  100% { transform: translate(130px, -90px) scale(1.18); }
+}
+
+.dark-canvas .app-container,
+.dark-canvas {
+  background: #0f172a;
 }
 
 /* Main Content Layout */
@@ -32,6 +121,7 @@ button {
   display: flex;
   min-height: 0;
   overflow: hidden;
+  z-index: 1;
 }
 
 .document-editor-section {
@@ -43,7 +133,7 @@ button {
   overflow: hidden;
 }
 
-/* Right Panel Drawer */
+/* Right Panel Drawer - Frosted Glass */
 .right-panel-drawer {
   position: absolute;
   top: 0;
@@ -51,10 +141,19 @@ button {
   width: 550px;
   height: 100%;
   z-index: 50;
-  background: #ffffff;
-  box-shadow: -6px 0 25px rgba(0, 0, 0, 0.1);
+  background: rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(30px) saturate(140%);
+  -webkit-backdrop-filter: blur(30px) saturate(140%);
+  border-left: 1px solid rgba(255, 255, 255, 0.24);
+  box-shadow: -10px 0 40px rgba(20, 30, 80, 0.15);
   transform: translateX(100%);
   transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.dark-canvas .right-panel-drawer {
+  background: rgba(15, 23, 42, 0.65);
+  border-left: 1px solid rgba(255, 255, 255, 0.20);
+  box-shadow: -10px 0 40px rgba(0, 0, 0, 0.60);
 }
 
 .right-panel-drawer.open {
@@ -76,25 +175,28 @@ button {
   width: 190px;
 }
 
-/* Toast Notifications */
+/* Toast Notifications - Atmospheric Glass Pill */
 .app-toast-notification {
   position: fixed;
   bottom: 42px;
   left: 50%;
   transform: translateX(-50%);
-  background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+  background: rgba(255, 255, 255, 0.20);
+  backdrop-filter: blur(24px) saturate(140%);
+  -webkit-backdrop-filter: blur(24px) saturate(140%);
   color: #ffffff;
-  padding: 10px 20px;
-  border-radius: 20px;
+  padding: 10px 22px;
+  border-radius: 24px;
   font-size: 12px;
-  font-weight: 500;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
-  border: 1px solid #334155;
+  font-weight: 600;
+  box-shadow: 0 10px 30px rgba(20, 30, 80, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.35);
   z-index: 9999;
   animation: toastFadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
   display: flex;
   align-items: center;
   gap: 8px;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
 }
 
 @keyframes toastFadeIn {

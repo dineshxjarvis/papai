@@ -8,6 +8,7 @@ import LeftPanel from "./components/LeftPanel/LeftPanel";
 import AIPanel from "./components/AIPanel/AIPanel";
 import AgentPanel from "./components/AgentPanel/AgentPanel";
 import StatusBar from "./components/StatusBar/StatusBar";
+import MotionBackground from "./components/MotionBackground";
 import { insertPageBreak, removePageBreak } from "./editor/commands";
 
 import "./App.css";
@@ -209,6 +210,9 @@ export default function App() {
 
   return (
     <div className="app-container">
+      {/* Motion Gradient Background */}
+      <MotionBackground />
+
       {/* MS Word Toolbar Ribbon */}
       <Ribbon
         editor={editor}
