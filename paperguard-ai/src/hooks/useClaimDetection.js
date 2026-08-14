@@ -1,8 +1,5 @@
 import { useRef, useCallback, useEffect } from "react";
-import {
-  runClaimPipeline,
-  runLiveClaimPipeline,
-} from "../claim-detection/pipeline.js";
+import { runClaimPipeline } from "../lib/claimPipeline.js";
 import { claimTypeToColor } from "../claim-detection/types.js";
 import { findClaimRange } from "../claim-detection/findInEditor.js";
 
@@ -155,9 +152,10 @@ export default function useClaimDetection(editor, claimLog, options = {}) {
       busyRef.current = true;
 
       try {
-        const claims = await runLiveClaimPipeline(windowText, {
+        const claims = await runClaimPipeline(windowText, {
           signal: controller.signal,
           provider,
+          source: "live",
           onProgress: (...args) => onProgressRef.current?.(...args),
         });
 

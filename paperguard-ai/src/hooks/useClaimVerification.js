@@ -4,19 +4,19 @@ import { runVerification } from "../phase3/runVerificationWithLangGraph.js";
 export default function useClaimVerification(options = {}) {
   const { provider = "auto", useMock = false } = options;
   const [isVerifying, setIsVerifying] = useState(false);
-  const [activeRun, setActiveRun] = useState(null);
-  const [lastResult, setLastResult] = useState(null);
+  const [activeRuns, setActiveRuns] = useState({});
+  const [resultsByClaimId, setResultsByClaimId] = useState({});
   const abortRef = useRef(null);
 
   const verifyClaim = useCallback(
     async (claim, { onProgress } = {}) => {
-      if (!claim?.text) return null;
+      if (!claim?.text || !claim?.id) return null;
       if (abortRef.current) abortRef.current.abort();
       const controller = new AbortController();
       abortRef.current = controller;
 
       setIsVerifying(true);
-      setActiveRun({ claimId: claim.id, status: "running" });
+      setActiveRuns((prev) => ({ ...prev, [claim.id]: { status: "running" } }));
 
       try {
         const result = await runVerification(claim, {
@@ -24,20 +24,29 @@ export default function useClaimVerification(options = {}) {
           provider,
           useMock,
           onProgress: (evt) => {
-            setActiveRun({ claimId: claim.id, ...evt });
+            setActiveRuns((prev) => ({ ...prev, [claim.id]: { ...prev[claim.id], ...evt } }));
             onProgress?.(evt);
           },
         });
-        setLastResult(result);
-        setActiveRun({
-          claimId: claim.id,
-          status: result.status,
-          verdict: result.verdict,
-        });
-        return result;
+        
+        // Ensure result has claim_id to map correctly
+        const finalResult = { ...result, claim_id: claim.id, claimId: claim.id };
+        setResultsByClaimId((prev) => ({ ...prev, [claim.id]: finalResult }));
+        
+        setActiveRuns((prev) => ({
+          ...prev,
+          [claim.id]: { status: result.status, verdict: result.verdict }
+        }));
+        return finalResult;
       } catch (e) {
-        setActiveRun({ claimId: claim.id, status: "failed", error: e.message });
-        return null;
+        // Silently ignore aborts (user switched claims) — don't mark as failed
+        if (e.name === 'AbortError' || /abort/i.test(e.message)) {
+          setActiveRuns((prev) => ({ ...prev, [claim.id]: { status: "cancelled" } }));
+          return { status: "cancelled", claim_id: claim.id };
+        }
+        console.error("Verification error:", e);
+        setActiveRuns((prev) => ({ ...prev, [claim.id]: { status: "failed", error: e.message } }));
+        return { status: "failed", error: e.message };
       } finally {
         setIsVerifying(false);
       }
@@ -50,5 +59,5 @@ export default function useClaimVerification(options = {}) {
     setIsVerifying(false);
   }, []);
 
-  return { verifyClaim, cancel, isVerifying, activeRun, lastResult };
+  return { verifyClaim, cancel, isVerifying, activeRuns, resultsByClaimId };
 }

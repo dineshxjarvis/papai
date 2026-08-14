@@ -1,0 +1,31 @@
+.app-shell {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden;
+  background-color: var(--bg-color);
+}
+
+.app-shell-header {
+  height: 64px;
+  min-height: 64px;
+  border-bottom: 1px solid var(--border-color);
+  background-color: var(--surface-color);
+  z-index: 10;
+}
+
+.app-shell-main {
+  flex: 1;
+  display: flex;
+  min-height: 0; /* Important for scrollable children */
+  overflow: hidden;
+}
+
+.app-shell-footer {
+  height: 40px;
+  min-height: 40px;
+  border-top: 1px solid var(--border-color);
+  background-color: var(--surface-color);
+  z-index: 10;
+}

@@ -1,25 +1,35 @@
 export function buildVerificationScope(result = {}) {
-  const papers = result.papers || [];
-  const evidence = result.evidence || [];
-  const support = evidence.filter((e) => e.supportsClaim === "yes");
-  const contradict = evidence.filter(
-    (e) => e.supportsClaim === "no" || e.channel === "adversarial"
-  );
-  const fullText = evidence.filter((e) => e.evidenceSource === "full_text").length;
-  const abstractOnly = evidence.filter(
-    (e) => e.evidenceSource === "abstract" || !e.evidenceSource
-  ).length;
-  const adversarialDone =
-    (result.queries || []).some((q) => q.channel === "adversarial") ||
-    (result.trace || []).some((t) => /adversarial/i.test(t.agent || ""));
+  // Handle new backend format: key_papers with stance field
+  const keyPapers = result.key_papers || [];
+  const support =
+    result.supporting_evidence ||
+    keyPapers.filter((p) => p.stance === "supports" || p.stance === "supporting");
+  const contradict =
+    result.contradicting_evidence ||
+    keyPapers.filter((p) => p.stance === "contradicts" || p.stance === "contradicting");
+
+  const allPapers = keyPapers.length > 0 ? keyPapers : [...support, ...contradict];
+
+  const fullText = allPapers.filter((e) => e.location && e.location.toLowerCase().includes("full text")).length;
+  const abstractOnly = allPapers.length - fullText;
+
+  const adversarialSearch = (result.audit_trace || []).some(
+    (t) => t.agent_name && t.agent_name.toLowerCase().includes("adversarial")
+  )
+    ? "completed"
+    : "skipped";
+
+  // conflict_map from new backend response
+  const conflictMap = result.conflict_map || {};
 
   return {
-    papersAnalyzed: papers.length,
+    papersAnalyzed: allPapers.length || (conflictMap.supporting?.count || 0) + (conflictMap.contradicting?.count || 0),
     fullText,
-    abstractOnly: Math.max(abstractOnly, evidence.length - fullText),
-    supporting: support.length,
-    contradicting: contradict.length,
-    adversarialSearch: adversarialDone ? "completed" : "skipped",
-    evidenceSpans: evidence.filter((e) => e.evidenceSpan).length,
+    abstractOnly: Math.max(abstractOnly, 0),
+    supporting: support.length || conflictMap.supporting?.count || 0,
+    contradicting: contradict.length || conflictMap.contradicting?.count || 0,
+    adversarialSearch,
+    evidenceSpans: allPapers.filter((e) => e.text_span || e.abstract).length,
+    description: result.scope || "No specific scope provided.",
   };
 }

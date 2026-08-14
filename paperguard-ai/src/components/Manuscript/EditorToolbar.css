@@ -1,0 +1,55 @@
+.editor-toolbar {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  padding: var(--space-2) var(--space-4);
+  border-bottom: 1px solid var(--border-color);
+  background-color: var(--surface-color);
+  color: var(--text-secondary);
+}
+
+.toolbar-group {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.toolbar-divider {
+  width: 1px;
+  height: 20px;
+  background-color: var(--border-color);
+}
+
+.toolbar-btn {
+  padding: 6px;
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-secondary);
+  transition: all 0.2s;
+}
+
+.toolbar-btn:hover {
+  background-color: var(--neutral-light);
+  color: var(--text-primary);
+}
+
+.toolbar-btn.active {
+  background-color: var(--primary-blue-light);
+  color: var(--primary-blue);
+}
+
+.toolbar-select {
+  border: 1px solid transparent;
+  background: transparent;
+  padding: 4px;
+  border-radius: var(--radius-sm);
+  color: var(--text-primary);
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.toolbar-select:hover {
+  background-color: var(--neutral-light);
+}

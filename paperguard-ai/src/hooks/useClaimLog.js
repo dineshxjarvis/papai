@@ -11,12 +11,10 @@ export default function useClaimLog(initial = []) {
     if (!Array.isArray(newClaims) || newClaims.length === 0) return [];
 
     setClaims((prev) => {
-      const existingTexts = new Set(
-        prev.map((c) => (c.text || "").toLowerCase().trim())
-      );
+      const existingIds = new Set(prev.map((c) => c.id));
       const unique = newClaims.filter((c) => {
-        const t = (c.text || "").toLowerCase().trim();
-        return t.length > 0 && !existingTexts.has(t);
+        if (!c.id) return false;
+        return !existingIds.has(c.id);
       });
       if (unique.length === 0) return prev;
       return [...unique, ...prev];

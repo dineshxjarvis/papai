@@ -1,17 +1,19 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useMemo } from "react";
 import useEditor from "./hooks/useEditor";
 import useClaimLog from "./hooks/useClaimLog";
 import useClaimDetection from "./hooks/useClaimDetection";
 import useClaimVerification from "./hooks/useClaimVerification";
 import { createPhase3Handlers } from "./phase3/wireAppHandlers";
+import { buildPhase4ViewModel } from "./phase4/buildPhase4ViewModel";
 
-import Ribbon from "./components/Ribbon/Ribbon";
-import DocumentEditor from "./components/Editor/DocumentEditor";
-import LeftPanel from "./components/LeftPanel/LeftPanel";
-import AIPanel from "./components/AIPanel/AIPanel";
-import AgentPanel from "./components/AgentPanel/AgentPanel";
+import AppShell from "./components/AppShell/AppShell";
+import TopBar from "./components/TopBar/TopBar";
+import DocumentSidebar from "./components/DocumentSidebar/DocumentSidebar";
+import VerificationWorkspace from "./components/Verification/VerificationWorkspace";
+import InvestigationTimeline from "./components/Investigation/InvestigationTimeline";
+import EditorToolbar from "./components/Manuscript/EditorToolbar";
 import StatusBar from "./components/StatusBar/StatusBar";
-import MotionBackground from "./components/MotionBackground";
+import DocumentEditor from "./components/editor/DocumentEditor";
 import { insertPageBreak, removePageBreak } from "./editor/commands";
 
 import "./App.css";
@@ -21,7 +23,6 @@ export default function App() {
   const claimLog = useClaimLog([]);
 
   const [docTitle, setDocTitle] = useState("Research_Paper_Draft.docx");
-  const [leftPanelOpen, setLeftPanelOpen] = useState(false);
   const [rightPanelOpen, setRightPanelOpen] = useState(true);
 
   const [fontFamily, setFontFamily] = useState("Times New Roman");
@@ -36,7 +37,7 @@ export default function App() {
   const [isScanning, setIsScanning] = useState(false);
   const [scanProgress, setScanProgress] = useState("");
   const [toastMessage, setToastMessage] = useState("");
-  const [agentTrace, setAgentTrace] = useState([]);
+  const [tracesByClaimId, setTracesByClaimId] = useState({});
 
   const showToast = useCallback((msg) => {
     setToastMessage(msg);
@@ -61,21 +62,60 @@ export default function App() {
     verifyClaim,
     cancel: cancelVerification,
     isVerifying,
-    activeRun,
-    lastResult,
+    activeRuns,
+    resultsByClaimId,
   } = useClaimVerification({
     provider: "auto",
     useMock: false,
   });
 
-  const { handleVerifyClaim } = createPhase3Handlers({
+  const { handleVerifyClaim: _handleVerifyClaim } = createPhase3Handlers({
     claimLog,
     verifyClaim,
-    setAgentTrace,
+    setTracesByClaimId,
     setRightPanelOpen,
     setIsScanning,
     showToast,
   });
+
+  // Smart verify: resolve claim from log, then call backend verification.
+  // Falls back to detect+verify on the current selection if claim not yet in log.
+  const handleVerifyClaim = useCallback(async (claimOrId) => {
+    if (!claimOrId) {
+      showToast('No claim selected');
+      return null;
+    }
+
+    const id = typeof claimOrId === 'string' ? claimOrId : claimOrId?.id;
+
+    // Always prefer the raw claims array (has full data like text, entities, etc.)
+    let target = claimLog.claims.find(c => c.id === id);
+
+    // Also search uiClaims in case it's a ui-only object
+    if (!target) {
+      const uiMatch = claimLog.uiClaims?.find(c => c.id === id);
+      if (uiMatch?.raw) target = uiMatch.raw;
+      else if (uiMatch) target = uiMatch;
+    }
+
+    if (target && target.text) {
+      return _handleVerifyClaim(target);
+    }
+
+    // Fallback: detect the current editor selection first, then verify
+    if (editor) {
+      setIsScanning(true);
+      setRightPanelOpen(true);
+      showToast('Detecting claim from selection…');
+      const found = await detection.detectSelection();
+      setIsScanning(false);
+      if (found.length > 0) {
+        return _handleVerifyClaim(found[0]);
+      }
+      showToast('No scientific claim detected — select claim text and try again');
+    }
+    return null;
+  }, [claimLog.claims, claimLog.uiClaims, _handleVerifyClaim, editor, detection, showToast]);
 
   const handleAddPage = () => {
     const newPageObj = {
@@ -141,179 +181,183 @@ export default function App() {
   const handleSelectClaim = (claimOrText) => {
     if (!editor) return;
 
-    const claim =
-      typeof claimOrText === "object"
-        ? claimOrText.raw || claimOrText
-        : claimLog.claims.find((c) => c.text === claimOrText);
+    // Resolve the claim object
+    let claim = typeof claimOrText === "object"
+      ? (claimOrText.raw || claimOrText)
+      : null;
 
-    if (claim?.id) claimLog.setActiveClaimId(claim.id);
+    const targetText = typeof claimOrText === "string"
+      ? claimOrText
+      : (claimOrText?.text || "");
 
-    const targetText =
-      typeof claimOrText === "string" ? claimOrText : claimOrText.text;
+    // Find existing claim by exact or fuzzy text match
+    if (!claim && targetText) {
+      claim = claimLog.claims.find((c) => c.text === targetText) ||
+              claimLog.claims.find((c) =>
+                c.text && targetText && (
+                  c.text.includes(targetText.slice(0, 40)) ||
+                  targetText.includes(c.text.slice(0, 40))
+                )
+              );
+    }
 
+    // If still no match, upsert a synthetic claim so the workspace shows it
+    if (!claim && targetText && targetText.trim().length > 10) {
+      const syntheticClaim = {
+        id: `syn_${targetText.replace(/[^a-z0-9]/gi, "").slice(0, 20).toLowerCase()}`,
+        text: targetText.trim(),
+        status: "detected",
+        color: "yellow",
+        type: "yellow",
+        confidence: 70,
+        source: "click",
+        claimType: "other",
+        detectedAt: new Date().toISOString(),
+      };
+      claimLog.addClaims([syntheticClaim]);
+      claim = syntheticClaim;
+    }
+
+    if (claim?.id) {
+      claimLog.setActiveClaimId(claim.id);
+      setRightPanelOpen(true);
+    }
+
+    // Scroll to + select the text in the editor
     if (targetText) {
       const docText = editor.state.doc.textContent;
       const index = docText.indexOf(targetText);
-
       if (index !== -1) {
         editor
           .chain()
           .focus()
-          .setTextSelection({
-            from: index + 1,
-            to: index + 1 + targetText.length,
-          })
+          .setTextSelection({ from: index + 1, to: index + 1 + targetText.length })
           .run();
-        showToast("Selected claim in manuscript");
-      } else {
-        showToast("Claim text focused");
       }
     }
   };
 
-  const handleInsertTable = () => {
-    if (!editor) return;
-    const tableHtml = `
-      <div class="figure-box">
-        <h3>Table 1: Performance Benchmarks on Medical Imaging Datasets</h3>
-        <table style="width:100%; border-collapse:collapse; margin-top:10px; font-size:13px; text-align:left;">
-          <thead>
-            <tr style="border-bottom:2px solid #cbd5e1; background:#f1f5f9;">
-              <th style="padding:6px;">Model Architecture</th>
-              <th style="padding:6px;">Dataset</th>
-              <th style="padding:6px;">Top-1 Accuracy</th>
-              <th style="padding:6px;">AUC Score</th>
-              <th style="padding:6px;">Status</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr style="border-bottom:1px solid #e2e8f0;">
-              <td style="padding:6px;">ResNet-50</td>
-              <td style="padding:6px;">ImageNet / ChestX-ray14</td>
-              <td style="padding:6px;">76.3%</td>
-              <td style="padding:6px;">0.912</td>
-              <td style="padding:6px; color:#16a34a; font-weight:600;">Verified</td>
-            </tr>
-            <tr style="border-bottom:1px solid #e2e8f0;">
-              <td style="padding:6px;">VGG-16</td>
-              <td style="padding:6px;">ImageNet / ChestX-ray14</td>
-              <td style="padding:6px;">71.5%</td>
-              <td style="padding:6px;">0.865</td>
-              <td style="padding:6px; color:#ca8a04; font-weight:600;">Baseline</td>
-            </tr>
-            <tr>
-              <td style="padding:6px;">DenseNet-121</td>
-              <td style="padding:6px;">ISIC Melanoma 2020</td>
-              <td style="padding:6px;">82.1%</td>
-              <td style="padding:6px;">0.945</td>
-              <td style="padding:6px; color:#16a34a; font-weight:600;">Verified</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    `;
-    editor.chain().focus().insertContent(tableHtml).run();
-    showToast("Inserted Benchmark Table into manuscript!");
+  const handleInspectClaim = (claimId) => {
+    if (claimId) {
+      claimLog.setActiveClaimId(claimId);
+      setRightPanelOpen(true);
+    }
   };
 
-  const handleInsertCitation = () => {
-    if (!editor) return;
-    const citationHtml = ` <sup>[Citation: He et al., CVPR 2016]</sup> `;
-    editor.chain().focus().insertContent(citationHtml).run();
-    showToast("Inserted IEEE Citation marker");
+  // Phase 4 View Model construction
+  const activeClaimResult = resultsByClaimId[claimLog.activeClaimId];
+  const activeRun = activeRuns[claimLog.activeClaimId];
+  
+  const p4ViewModel = useMemo(() => {
+    if (!activeClaimResult) return null;
+    const activeClaimId = claimLog.activeClaimId;
+    const targetClaim = claimLog.claims.find(c => c.id === activeClaimId) || { id: activeClaimId, text: activeClaimResult.claim?.claim_text || "" };
+    return buildPhase4ViewModel(targetClaim, activeClaimResult);
+  }, [activeClaimResult, claimLog.claims, claimLog.activeClaimId]);
+
+  const handleFileUpload = (file) => {
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const content = e.target.result;
+      if (editor) {
+        // Clear all claims before loading new file
+        claimLog.clearClaims();
+        setTracesByClaimId({});
+        
+        // Use setContent. If the file is plain text, wrap paragraphs in <p> manually so TipTap parses it correctly
+        // Or if it's html, it parses directly. We'll do a simple plain text conversion if there's no HTML tags
+        let parsedContent = content;
+        if (!content.includes('<') || !content.includes('>')) {
+          parsedContent = content.split('\n').filter(line => line.trim()).map(line => `<p>${line.trim()}</p>`).join('');
+        }
+        
+        editor.commands.setContent(parsedContent);
+        setDocTitle(file.name);
+        showToast(`Loaded ${file.name}`);
+      }
+    };
+    reader.onerror = () => {
+      showToast("Error reading file");
+    };
+    reader.readAsText(file);
   };
 
   return (
-    <div className="app-container">
-      <MotionBackground />
-
-      <Ribbon
-        editor={editor}
-        onAnalyzeAll={handleAnalyzeAll}
-        onAnalyzeSelection={handleAnalyzeSelection}
-        onInsertTable={handleInsertTable}
-        onInsertCitation={handleInsertCitation}
-        onAddPage={handleAddPage}
-        onDeletePage={() => handleDeletePage(activePageIndex)}
-        fontFamily={fontFamily}
-        setFontFamily={setFontFamily}
-        fontSize={fontSize}
-        setFontSize={setFontSize}
-        viewMode={viewMode}
-        setViewMode={setViewMode}
-        darkModeCanvas={darkModeCanvas}
-        setDarkModeCanvas={setDarkModeCanvas}
-        docTitle={docTitle}
-        setDocTitle={setDocTitle}
-        showToast={showToast}
-      />
-
-      <main className="main-content-layout">
-        <LeftPanel
-          open={leftPanelOpen}
-          onClose={() => setLeftPanelOpen(false)}
-          editor={editor}
-        />
-
-        <section className="document-editor-section">
-          <DocumentEditor
-            editor={editor}
-            fontFamily={fontFamily}
-            fontSize={fontSize}
-            viewMode={viewMode}
-            darkModeCanvas={darkModeCanvas}
-            zoom={zoom}
-            pages={pages}
-            activePageIndex={activePageIndex}
-            setActivePageIndex={setActivePageIndex}
-            onAddPage={handleAddPage}
-            onDeletePage={handleDeletePage}
-            onPageContentChange={handlePageContentChange}
-            onClaimClick={handleSelectClaim}
-            onAnalyzeSelection={handleAnalyzeSelection}
+    <>
+      <AppShell
+        topBar={
+          <TopBar 
+            docTitle={docTitle} 
+            onAnalyzeAll={handleAnalyzeAll} 
+            onVerifySelected={() => {
+              if (claimLog.activeClaimId) handleVerifyClaim(claimLog.activeClaimId);
+            }}
+            hasSelection={editor && !editor.state.selection.empty}
+            onFileUpload={handleFileUpload}
           />
-        </section>
-
-        <aside className={`right-panel-drawer ${rightPanelOpen ? "open" : ""}`}>
-          <div className="drawer-flex-wrapper">
-            <AIPanel
-              claims={claimLog.uiClaims}
-              activeClaimId={claimLog.activeClaimId}
-              onSelectClaim={handleSelectClaim}
-              onVerifyClaim={handleVerifyClaim}
+        }
+        sidebar={
+          <DocumentSidebar 
+            claims={claimLog.uiClaims} 
+            activeClaimId={claimLog.activeClaimId}
+            onSelectClaim={handleSelectClaim}
+            onVerifyClaim={handleVerifyClaim}
+          />
+        }
+        manuscript={
+          <div style={{display: 'flex', flexDirection: 'column', height: '100%', width: '100%'}}>
+            <EditorToolbar editor={editor} fontFamily={fontFamily} setFontFamilyProp={setFontFamily} />
+            <DocumentEditor
+              editor={editor}
+              fontFamily={fontFamily}
+              fontSize={fontSize}
+              viewMode={viewMode}
+              darkModeCanvas={darkModeCanvas}
+              zoom={zoom}
+              pages={pages}
+              activePageIndex={activePageIndex}
+              setActivePageIndex={setActivePageIndex}
+              onAddPage={handleAddPage}
+              onDeletePage={handleDeletePage}
+              onPageContentChange={handlePageContentChange}
+              onClaimClick={handleSelectClaim}
               onAnalyzeSelection={handleAnalyzeSelection}
-              onClose={() => setRightPanelOpen(false)}
-              isScanning={isScanning || isVerifying}
-              scanProgress={scanProgress}
-              verificationResult={lastResult}
-              activeClaim={
-                claimLog.claims.find((c) => c.id === claimLog.activeClaimId) ||
-                null
-              }
-            />
-
-            <AgentPanel
-              trace={agentTrace}
-              activeRun={activeRun}
-              isRunning={isVerifying}
+              onVerifyClaim={handleVerifyClaim}
+              onInspectClaim={handleInspectClaim}
+              activeClaimId={claimLog.activeClaimId}
+              claims={claimLog.claims}
             />
           </div>
-        </aside>
-      </main>
-
-      <StatusBar
-        editor={editor}
-        zoom={zoom}
-        setZoom={setZoom}
-        pages={pages}
-        activePageIndex={activePageIndex}
+        }
+        verification={
+          <VerificationWorkspace
+            activeClaim={claimLog.claims.find(c => c.id === claimLog.activeClaimId)}
+            verificationResult={activeClaimResult}
+            p4ViewModel={p4ViewModel}
+            onVerify={(id) => handleVerifyClaim(id || claimLog.activeClaimId)}
+            onClose={() => setRightPanelOpen(false)}
+          />
+        }
+        investigation={
+          <InvestigationTimeline 
+            trace={tracesByClaimId[claimLog.activeClaimId] || []} 
+            isRunning={activeRun?.status === "running"} 
+            onReverify={() => handleVerifyClaim(claimLog.activeClaimId)}
+            onShowWhy={() => {}} 
+          />
+        }
+        statusBar={
+          <StatusBar backendConnected={true} useMock={false} /> 
+        }
+        isVerificationOpen={rightPanelOpen}
+        isInvestigationOpen={rightPanelOpen}
       />
-
       {toastMessage && (
         <div className="app-toast-notification">
           <span>{toastMessage}</span>
         </div>
       )}
-    </div>
+    </>
   );
 }

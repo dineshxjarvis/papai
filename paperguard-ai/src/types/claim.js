@@ -63,13 +63,23 @@ export function statusToLabel(status) {
   }
 }
 
+function generateStableClaimId(text) {
+  const clean = (text || "").toLowerCase().replace(/[^a-z0-9]/g, "");
+  let hash = 5381;
+  for (let i = 0; i < clean.length; i++) {
+    hash = ((hash << 5) + hash) + clean.charCodeAt(i);
+  }
+  return `c_${Math.abs(hash).toString(16)}`;
+}
+
 export function normalizeClaim(raw, source = "live") {
   const status = raw.status || "detected";
   const color = statusToColor(status);
+  const text = (raw.text || raw.claim_text || raw.claim_span || "").trim();
 
   return {
-    id: raw.id || `claim_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`,
-    text: (raw.text || raw.claim_span || "").trim(),
+    id: generateStableClaimId(text),
+    text,
     claimType: raw.claim_type || raw.claimType || "other",
     confidence:
       typeof raw.confidence === "number"
@@ -81,13 +91,13 @@ export function normalizeClaim(raw, source = "live") {
     source,
     polarity: raw.polarity || "neutral",
     entities: {
-      method: raw.entities?.method ?? null,
-      baseline: raw.entities?.baseline ?? null,
-      metric: raw.entities?.metric ?? null,
-      value: raw.entities?.value ?? null,
-      dataset: raw.entities?.dataset ?? null,
+      method: raw.subject || raw.entities?.method || null,
+      baseline: raw.comparison_target || raw.entities?.baseline || null,
+      metric: raw.metric || raw.entities?.metric || null,
+      value: raw.value || raw.entities?.value || null,
+      dataset: raw.entities?.dataset || null,
     },
-    reason: raw.reason || "",
+    reason: raw.predicate ? `${raw.subject} ${raw.predicate} ${raw.value || ''}` : (raw.reason || ""),
     color,
     type: color,
     from: raw.from ?? null,

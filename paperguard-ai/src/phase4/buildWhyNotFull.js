@@ -4,31 +4,31 @@ export function buildWhyNotFullySupported(result = {}) {
     return { show: false, title: null, summary: null, bullets: [] };
   }
 
-  const evidence = result.evidence || [];
-  const support = evidence.filter((e) => e.supportsClaim === "yes");
-  const contradict = evidence.filter((e) => e.supportsClaim === "no");
-  const coverage = result.evidenceCoverage || result.coverage || {};
-  const quality = result.evidenceQuality || "weak";
+  const support = result.supporting_evidence || [];
+  const contradict = result.contradicting_evidence || [];
+  const coverage = result.coverage || {};
+  const conflicts = result.conflicts || [];
+  
   const bullets = [];
 
   if (support.length) bullets.push(`${support.length} supporting result(s) found`);
   if (contradict.length)
     bullets.push(`${contradict.length} contradictory / limitation result(s)`);
-  if (coverage.ratio != null && coverage.ratio < 0.8) {
-    bullets.push(
-      `Claim coverage incomplete (${coverage.matched ?? "?"}/${coverage.total ?? "?"})`
-    );
+  
+  if (coverage.gaps && coverage.gaps.length > 0) {
+    coverage.gaps.forEach(gap => bullets.push(`Gap: ${gap}`));
   }
-  if (quality === "weak") {
-    bullets.push("Evidence quality is weak (mostly abstracts or low specificity)");
+  
+  if (conflicts.length > 0) {
+    conflicts.forEach(c => bullets.push(`Conflict: ${c.description || c.nature_of_conflict}`));
   }
-  const fullText = evidence.filter((e) => e.evidenceSource === "full_text").length;
-  if (evidence.length && fullText === 0) {
+
+  const allEvidence = [...support, ...contradict];
+  const fullText = allEvidence.filter((e) => e.location && e.location.toLowerCase().includes("full text")).length;
+  if (allEvidence.length && fullText === 0) {
     bullets.push("No full-text spans used — abstract-only verification");
   }
-  if ((result.papers || []).length < 3) {
-    bullets.push("Limited literature sample in this run");
-  }
+
   if (!bullets.length) {
     bullets.push("Available evidence is mixed or incomplete for a full support rating");
   }

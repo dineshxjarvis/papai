@@ -1,0 +1,152 @@
+.investigation-timeline-panel {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: var(--space-4);
+}
+
+.investigation-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--space-6);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+}
+
+.timeline-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  position: relative;
+}
+
+.timeline-list::before {
+  content: '';
+  position: absolute;
+  left: 9px;
+  top: 10px;
+  bottom: 10px;
+  width: 1px;
+  background-color: var(--border-color);
+  z-index: 0;
+}
+
+.timeline-step {
+  display: flex;
+  gap: var(--space-3);
+  position: relative;
+  z-index: 1;
+}
+
+.step-indicator {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background-color: var(--surface-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  border: 1px solid var(--border-color);
+}
+
+.timeline-step.completed .step-indicator {
+  background-color: var(--success);
+  border-color: var(--success);
+  color: white;
+}
+
+.timeline-step.running .step-indicator {
+  background-color: var(--primary-blue);
+  border-color: var(--primary-blue);
+  color: white;
+  animation: pulse 2s infinite;
+}
+
+.timeline-step.failed .step-indicator {
+  background-color: var(--danger);
+  border-color: var(--danger);
+  color: white;
+}
+
+.timeline-step.queued .step-indicator {
+  background-color: var(--border-color);
+  border-color: var(--border-color);
+  color: transparent;
+}
+
+@keyframes pulse {
+  0% { box-shadow: 0 0 0 0 rgba(37, 99, 235, 0.4); }
+  70% { box-shadow: 0 0 0 6px rgba(37, 99, 235, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(37, 99, 235, 0); }
+}
+
+.step-content {
+  display: flex;
+  flex-direction: column;
+  padding-top: 1px;
+}
+
+.step-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.step-detail {
+  font-size: 11px;
+  color: var(--text-secondary);
+  margin-top: 2px;
+}
+
+.step-time {
+  font-size: 10px;
+  color: var(--neutral);
+  margin-top: 4px;
+}
+
+.timeline-step.queued .step-title,
+.timeline-step.queued .step-detail {
+  color: var(--neutral);
+}
+
+.related-actions {
+  margin-top: auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding-top: var(--space-6);
+}
+
+.related-actions-title {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+  margin-bottom: var(--space-2);
+}
+
+.action-btn {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  background: white;
+  color: var(--primary-blue);
+  font-size: 12px;
+  font-weight: 500;
+  transition: all 0.2s;
+  cursor: pointer;
+}
+
+.action-btn:hover {
+  background-color: var(--primary-blue-light);
+  border-color: var(--primary-blue);
+}

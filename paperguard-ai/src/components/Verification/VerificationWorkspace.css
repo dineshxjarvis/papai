@@ -1,0 +1,273 @@
+.verification-workspace {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background-color: var(--surface-color);
+}
+
+.verification-header {
+  padding: var(--space-4);
+  border-bottom: 1px solid var(--border-color);
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.header-left {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.verification-title {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+}
+
+.claim-header-box {
+  display: flex;
+  gap: var(--space-3);
+  align-items: flex-start;
+  margin-top: var(--space-2);
+}
+
+.claim-header-text {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-primary);
+  line-height: 1.4;
+}
+
+.verification-tabs {
+  display: flex;
+  border-bottom: 1px solid var(--border-color);
+  padding: 0 var(--space-4);
+  gap: var(--space-4);
+}
+
+.tab-btn {
+  padding: var(--space-3) 0;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  border-bottom: 2px solid transparent;
+  cursor: pointer;
+  background: none;
+}
+
+.tab-btn:hover {
+  color: var(--text-primary);
+}
+
+.tab-btn.active {
+  color: var(--primary-blue);
+  border-bottom-color: var(--primary-blue);
+}
+
+.verification-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--space-4);
+}
+
+/* Empty State */
+.empty-verification {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: var(--text-secondary);
+  text-align: center;
+  gap: var(--space-4);
+  padding: var(--space-6);
+}
+
+.empty-icon {
+  color: var(--border-color);
+}
+
+/* Summary Tab */
+.summary-grid {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+}
+
+.verdict-banner {
+  padding: var(--space-4);
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+}
+
+.verdict-banner.green {
+  background-color: var(--success-light);
+  border: 1px solid rgba(22, 163, 74, 0.2);
+}
+
+.verdict-banner.yellow {
+  background-color: var(--warning-light);
+  border: 1px solid rgba(217, 119, 6, 0.2);
+}
+
+.verdict-banner.red {
+  background-color: var(--danger-light);
+  border: 1px solid rgba(220, 38, 38, 0.2);
+}
+
+.verdict-text-group {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.verdict-title {
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.verdict-banner.green .verdict-title { color: var(--success); }
+.verdict-banner.yellow .verdict-title { color: var(--warning); }
+.verdict-banner.red .verdict-title { color: var(--danger); }
+
+.verdict-desc {
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.metrics-row {
+  display: flex;
+  gap: var(--space-4);
+}
+
+.metric-card {
+  flex: 1;
+  background-color: var(--neutral-light);
+  padding: var(--space-3);
+  border-radius: var(--radius-md);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.metric-label {
+  font-size: 11px;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+  font-weight: 600;
+}
+
+.metric-value {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.coverage-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.coverage-item {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+}
+
+.coverage-icon {
+  margin-top: 2px;
+}
+.coverage-icon.matched { color: var(--success); }
+.coverage-icon.missing { color: var(--warning); }
+
+.coverage-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.coverage-label {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.coverage-val {
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+/* Evidence Tab */
+.evidence-section {
+  margin-bottom: var(--space-6);
+}
+
+.evidence-section-title {
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: var(--space-3);
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.evidence-card {
+  padding: var(--space-4);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  margin-bottom: var(--space-3);
+  background-color: white;
+}
+
+.evidence-card.support {
+  border-left: 3px solid var(--success);
+}
+.evidence-card.contradict {
+  border-left: 3px solid var(--danger);
+}
+
+.evidence-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: var(--space-2);
+}
+
+.evidence-span {
+  font-size: 13px;
+  color: var(--text-secondary);
+  font-style: italic;
+  padding: var(--space-2);
+  background-color: var(--neutral-light);
+  border-radius: var(--radius-sm);
+  margin-bottom: var(--space-3);
+}
+
+.evidence-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 11px;
+  color: var(--neutral);
+}
+
+.evidence-link {
+  color: var(--primary-blue);
+  text-decoration: none;
+  font-weight: 500;
+}
+.evidence-link:hover {
+  text-decoration: underline;
+}
+
+/* Why Tab (Audit Trail) */
+.audit-container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}

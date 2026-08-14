@@ -11,20 +11,35 @@ export async function runVerification(claim, options = {}) {
       detail: "Starting StateGraph…",
     });
     try {
-      const result = await runLangGraphVerification(claim, options);
-      for (const step of result.trace || []) {
+      // Intercept websocket updates
+      const wsOpts = {
+        ...options,
+        onStatusUpdate: (msg) => {
+          onProgress?.({
+            agent: msg.agent_name || "LangGraph Agent",
+            status: msg.status || "running",
+            detail: msg.message || "Working...",
+          });
+        }
+      };
+      
+      const result = await runLangGraphVerification(claim, wsOpts);
+      
+      for (const step of result.audit_trace || []) {
         onProgress?.({
-          agent: step.agent,
+          agent: step.agent_name,
           status: step.status,
-          detail: step.detail,
-          trace: result.trace,
+          detail: step.message,
+          trace: result.audit_trace,
         });
       }
       return result;
     } catch (e) {
-      console.warn("[verify] LangGraph failed, JS fallback:", e.message);
+      console.error("[verify] LangGraph failed:", e.message);
+      throw e;
     }
   }
 
-  return runVerificationPipeline(claim, options);
+  // If LangGraph is not enabled, throw an error because it is required now
+  throw new Error("LangGraph verification is disabled in the environment. Set VITE_USE_LANGGRAPH=true in .env");
 }

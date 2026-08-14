@@ -1,8 +1,7 @@
 import React, { useRef, useEffect } from "react";
 import { EditorContent } from "@tiptap/react";
 import { Sparkles } from "lucide-react";
-import PageNavigationSidebar from "../PageNavigation/PageNavigationSidebar";
-import MotionBackground from "../MotionBackground";
+import ClaimBubbleMenu from "../Manuscript/ClaimBubbleMenu";
 import "./Editor.css";
 
 export default function DocumentEditor({
@@ -19,9 +18,29 @@ export default function DocumentEditor({
   onDeletePage,
   onPageContentChange,
   onClaimClick,
-  onAnalyzeSelection
+  onAnalyzeSelection,
+  onVerifyClaim,
+  onInspectClaim,
+  activeClaimId,
+  claims = []
 }) {
   const scrollWrapperRef = useRef(null);
+
+  // Apply active claim styling directly to the DOM to avoid mutating the document
+  useEffect(() => {
+    if (!editor || !editor.view) return;
+    
+    const marks = editor.view.dom.querySelectorAll("mark.claim-mark");
+    marks.forEach(mark => {
+      if (activeClaimId && mark.getAttribute("data-claim-id") === activeClaimId) {
+        mark.classList.add("active-claim");
+        // Scroll to the active claim if it was just selected
+        mark.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      } else {
+        mark.classList.remove("active-claim");
+      }
+    });
+  }, [activeClaimId, editor?.state?.doc]);
   const pageRefs = useRef([]);
   const previousPagesLength = useRef(pages.length);
 
@@ -90,8 +109,11 @@ export default function DocumentEditor({
   const handleEditorClick = (e) => {
     const target = e.target.closest("mark");
     if (target) {
-      const text = target.innerText.trim();
-      if (onClaimClick) {
+      // Clone the mark, remove any <sup> footnote numbers, then get clean text
+      const clone = target.cloneNode(true);
+      clone.querySelectorAll("sup").forEach(s => s.remove());
+      const text = (clone.innerText || clone.textContent || "").trim();
+      if (text && onClaimClick) {
         onClaimClick(text);
       }
     }
@@ -102,16 +124,7 @@ export default function DocumentEditor({
 
   return (
     <div className={`editor-container ${darkModeCanvas ? "dark-canvas" : ""}`}>
-      {/* Left MS Word Page Navigation Sidebar */}
-      {viewMode === "page" && (
-        <PageNavigationSidebar
-          pages={pages}
-          activePageIndex={activePageIndex}
-          onSelectPage={handleSelectPage}
-          onAddPage={onAddPage}
-          onDeletePage={onDeletePage}
-        />
-      )}
+      {editor && <ClaimBubbleMenu editor={editor} onVerifyClaim={onVerifyClaim} onInspectClaim={onInspectClaim} onAnalyzeSelection={onAnalyzeSelection} claims={claims} />}
 
       {/* Main Document Canvas Scroll Wrapper */}
       <div
@@ -127,26 +140,6 @@ export default function DocumentEditor({
             transformOrigin: "top center"
           }}
         >
-          {/* MS Word Top Horizontal Ruler Bar */}
-          {viewMode === "page" && (
-            <div className="ms-word-ruler">
-              <div className="ruler-left-margin" title="Left Margin (1 inch)" />
-              <div className="ruler-track">
-                <div className="ruler-indent-marker top" title="First Line Indent" />
-                <div className="ruler-indent-marker bottom" title="Left Indent" />
-                {rulerTicks.map((tick) => (
-                  <div key={tick} className="ruler-tick-mark">
-                    <span className="ruler-number">{tick}</span>
-                    <div className="ruler-subticks">
-                      <span /><span /><span />
-                    </div>
-                  </div>
-                ))}
-              </div>
-              <div className="ruler-right-margin" title="Right Margin (1 inch)" />
-            </div>
-          )}
-
           {/* Stack of A4 Paper Pages */}
           <div className="pages-stack-container">
             {pages.map((page, index) => {

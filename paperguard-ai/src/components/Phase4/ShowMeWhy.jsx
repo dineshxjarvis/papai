@@ -29,8 +29,15 @@ export default function ShowMeWhy({ audit, onClose }) {
     <div className="p4-drawer-overlay" role="dialog" aria-label="Show Me Why">
       <div className="p4-drawer">
         <div className="p4-drawer-header">
-          <span>← Show Me Why</span>
-          <button type="button" className="p4-btn ghost" onClick={onClose}>
+          <button 
+            type="button" 
+            className="p4-btn ghost" 
+            onClick={onClose}
+            style={{ display: 'flex', alignItems: 'center', gap: '8px', border: 'none', background: 'transparent', padding: 0, fontSize: '14px', color: 'inherit' }}
+          >
+            ← Show Me Why
+          </button>
+          <button type="button" className="p4-btn ghost" onClick={onClose} style={{ padding: '4px 8px' }}>
             ×
           </button>
         </div>
@@ -52,7 +59,7 @@ export default function ShowMeWhy({ audit, onClose }) {
                     </li>
                   ))}
                   {(audit.atoms || []).map((a, i) => (
-                    <li key={`a${i}`}>{a}</li>
+                    <li key={`a${i}`}>{typeof a === 'object' ? (a.text || JSON.stringify(a)) : a}</li>
                   ))}
                 </ul>
               )}

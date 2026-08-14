@@ -1,0 +1,33 @@
+.claim-bubble-menu {
+  background-color: var(--text-primary);
+  border-radius: var(--radius-sm);
+  padding: 4px;
+  box-shadow: var(--shadow-lg);
+  display: flex;
+}
+
+.bubble-btn-group {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.bubble-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: white;
+  padding: 6px 10px;
+  border-radius: 4px;
+  font-size: 13px;
+  font-weight: 500;
+  transition: background-color 0.2s;
+}
+
+.bubble-btn:hover {
+  background-color: rgba(255,255,255,0.15);
+}
+
+.bubble-btn.icon-only {
+  padding: 6px;
+}

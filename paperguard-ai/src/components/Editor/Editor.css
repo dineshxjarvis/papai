@@ -1,10 +1,6 @@
 /* =========================================================
    PAPERGUARD AI
-   PREMIUM FROSTED GLASS DOCUMENT EDITOR
-   ========================================================= */
-
-/* =========================================================
-   EDITOR CONTAINER
+   CLEAN ACADEMIC DOCUMENT EDITOR
    ========================================================= */
 
 .editor-container {
@@ -13,13 +9,9 @@
   flex-direction: row;
   height: 100%;
   overflow: hidden;
-  background: transparent;
+  background-color: var(--bg-color);
   position: relative;
 }
-
-/* =========================================================
-   LOADING
-   ========================================================= */
 
 .editor-loading {
   flex: 1;
@@ -28,29 +20,18 @@
   align-items: center;
   justify-content: center;
   gap: 12px;
-
-  color: #ffffff;
+  color: var(--text-secondary);
   font-size: 14px;
 }
 
 .spin-icon {
   animation: spin 1.5s linear infinite;
-  color: #ffffff;
 }
 
 @keyframes spin {
-  from {
-    transform: rotate(0deg);
-  }
-
-  to {
-    transform: rotate(360deg);
-  }
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
 }
-
-/* =========================================================
-   MAIN EDITOR WORKSPACE
-   ========================================================= */
 
 .editor-workspace,
 .editor-wrapper {
@@ -64,613 +45,84 @@
   position: relative;
   scroll-behavior: smooth;
   width: 100%;
-
-  /*
-   * IMPORTANT:
-   * Strong color is behind the glass.
-   * The document itself remains mostly neutral.
-   */
-  background:
-    radial-gradient(circle at 10% 20%,
-      rgba(90, 120, 255, 0.32),
-      transparent 30%),
-    radial-gradient(circle at 90% 25%,
-      rgba(160, 125, 255, 0.25),
-      transparent 32%),
-    radial-gradient(circle at 18% 82%,
-      rgba(255, 150, 205, 0.20),
-      transparent 28%),
-    radial-gradient(circle at 82% 82%,
-      rgba(170, 140, 255, 0.18),
-      transparent 30%),
-    linear-gradient(135deg,
-      #7c8dce 0%,
-      #9da9d7 48%,
-      #8795d0 100%);
 }
-
-/* =========================================================
-   LARGE AMBIENT BLUE LIGHT
-   ========================================================= */
-
-.editor-wrapper::before {
-  content: "";
-
-  position: absolute;
-
-  width: 520px;
-  height: 520px;
-
-  left: -130px;
-  top: 120px;
-
-  border-radius: 50%;
-
-  background:
-    radial-gradient(circle,
-      rgba(90, 125, 255, 0.38) 0%,
-      rgba(90, 125, 255, 0.18) 38%,
-      transparent 72%);
-
-  filter: blur(110px);
-
-  pointer-events: none;
-
-  z-index: 0;
-}
-
-/* =========================================================
-   LARGE AMBIENT PINK / PURPLE LIGHT
-   ========================================================= */
-
-.editor-wrapper::after {
-  content: "";
-
-  position: absolute;
-
-  width: 500px;
-  height: 500px;
-
-  right: -100px;
-  bottom: 30px;
-
-  border-radius: 50%;
-
-  background:
-    radial-gradient(circle,
-      rgba(245, 155, 215, 0.30) 0%,
-      rgba(175, 130, 255, 0.16) 40%,
-      transparent 72%);
-
-  filter: blur(115px);
-
-  pointer-events: none;
-
-  z-index: 0;
-}
-
-/* =========================================================
-   FLOW MODE
-   ========================================================= */
-
-.editor-wrapper.flow-mode {
-  padding: 20px;
-}
-
-/* =========================================================
-   ZOOM CONTAINER
-   ========================================================= */
 
 .editor-zoom-container {
   display: flex;
   flex-direction: column;
   align-items: center;
-
   width: 100%;
   max-width: 840px;
   margin: 0 auto;
-
   position: relative;
-
   z-index: 1;
 }
 
 /* =========================================================
-   GLASS RULER
-   ========================================================= */
-
-.ms-word-ruler {
-  width: 100%;
-  max-width: 840px;
-
-  height: 24px;
-
-  background:
-    rgba(255, 255, 255, 0.16);
-
-  backdrop-filter:
-    blur(24px) saturate(130%);
-
-  -webkit-backdrop-filter:
-    blur(24px) saturate(130%);
-
-  border:
-    1px solid rgba(255, 255, 255, 0.30);
-
-  box-shadow:
-    0 8px 25px rgba(20, 30, 80, 0.12),
-    inset 0 1px 0 rgba(255, 255, 255, 0.38);
-
-  border-bottom: none;
-
-  border-radius: 10px 10px 0 0;
-
-  display: flex;
-  align-items: center;
-
-  user-select: none;
-
-  position: relative;
-
-  margin-bottom: 2px;
-
-  color: #ffffff;
-}
-
-.ruler-left-margin,
-.ruler-right-margin {
-  width: 80px;
-  height: 100%;
-
-  background:
-    rgba(255, 255, 255, 0.07);
-}
-
-.ruler-track {
-  flex: 1;
-
-  height: 100%;
-
-  background:
-    rgba(255, 255, 255, 0.08);
-
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-
-  padding: 0 10px;
-
-  position: relative;
-}
-
-.ruler-indent-marker {
-  position: absolute;
-
-  left: 6px;
-
-  width: 0;
-  height: 0;
-
-  z-index: 10;
-}
-
-.ruler-indent-marker.top {
-  top: 2px;
-
-  border-left: 4px solid transparent;
-  border-right: 4px solid transparent;
-  border-top: 6px solid rgba(255, 255, 255, 0.95);
-}
-
-.ruler-indent-marker.bottom {
-  bottom: 2px;
-
-  border-left: 4px solid transparent;
-  border-right: 4px solid transparent;
-  border-bottom: 6px solid rgba(255, 255, 255, 0.95);
-}
-
-.ruler-tick-mark {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-
-  position: relative;
-}
-
-.ruler-number {
-  font-size: 10px;
-
-  color: rgba(255, 255, 255, 0.90);
-
-  font-weight: 700;
-
-  font-family: monospace;
-
-  line-height: 1;
-
-  margin-bottom: 2px;
-
-  text-shadow:
-    0 1px 3px rgba(20, 30, 70, 0.30);
-}
-
-.ruler-subticks {
-  display: flex;
-  gap: 6px;
-}
-
-.ruler-subticks span {
-  width: 1px;
-  height: 4px;
-
-  background:
-    rgba(255, 255, 255, 0.55);
-}
-
-/* =========================================================
-   PAGE STACK
+   PAGE STACK & PAPER
    ========================================================= */
 
 .pages-stack-container {
   display: flex;
   flex-direction: column;
   align-items: center;
-
   gap: 36px;
-
   width: 100%;
   max-width: 840px;
 }
-
-/* =========================================================
-   PAGE ENTRY ANIMATION
-   ========================================================= */
-
-.page-sheet-card {
-  animation:
-    glassPageEnter 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-
-  transform-origin: top center;
-
-  will-change:
-    transform,
-    opacity;
-}
-
-@keyframes glassPageEnter {
-  0% {
-    opacity: 0;
-
-    transform:
-      translateY(30px) scale(0.975);
-  }
-
-  60% {
-    opacity: 0.94;
-
-    transform:
-      translateY(-3px) scale(1.003);
-  }
-
-  100% {
-    opacity: 1;
-
-    transform:
-      translateY(0) scale(1);
-  }
-}
-
-/* =========================================================
-   MAIN FROSTED GLASS DOCUMENT
-   ========================================================= */
 
 .document-paper {
   width: 100%;
   max-width: 840px;
-
   min-height: 1050px;
-
   position: relative;
-
-  /*
-   * =====================================================
-   * IMPORTANT:
-   * DO NOT USE A BLUE OR PURPLE PAGE BACKGROUND.
-   *
-   * This is neutral translucent glass.
-   * The environment behind it supplies the color.
-   * =====================================================
-   */
-
-  background:
-    rgba(255, 255, 255, 0.14);
-
-  /*
-   * REAL FROSTED GLASS
-   */
-
-  backdrop-filter:
-    blur(36px) saturate(125%);
-
-  -webkit-backdrop-filter:
-    blur(36px) saturate(125%);
-
-  /*
-   * SUBTLE WHITE GLASS EDGE
-   */
-
-  border:
-    1px solid rgba(255, 255, 255, 0.52);
-
-  /*
-   * FLOATING GLASS DEPTH
-   */
-
-  box-shadow:
-    0 30px 90px rgba(15, 23, 42, 0.18),
-    0 10px 35px rgba(70, 80, 160, 0.08),
-    inset 0 1px 0 rgba(255, 255, 255, 0.68),
-    inset 0 -1px 0 rgba(255, 255, 255, 0.10);
-
-  border-radius: 12px;
-
+  background-color: var(--surface-color);
+  border: 1px solid var(--border-color);
+  box-shadow: var(--shadow-md);
+  border-radius: 2px;
   padding: 70px 80px;
-
   color: #111827;
-
   line-height: 1.75;
-
-  overflow: hidden;
-
-  transition:
-    box-shadow 0.3s ease,
-    border-color 0.3s ease;
+  transition: box-shadow 0.2s;
 }
-
-/* =========================================================
-   FROSTED GLASS REFLECTION
-   ========================================================= */
-
-.document-paper::before {
-  content: "";
-
-  position: absolute;
-
-  inset: 0;
-
-  pointer-events: none;
-
-  background:
-    linear-gradient(125deg,
-      rgba(255, 255, 255, 0.18) 0%,
-      rgba(255, 255, 255, 0.06) 20%,
-      transparent 42%,
-      transparent 72%,
-      rgba(255, 255, 255, 0.06) 100%);
-
-  border-radius: inherit;
-
-  z-index: 0;
-}
-
-/* =========================================================
-   INNER GLASS EDGE
-   ========================================================= */
-
-.document-paper::after {
-  content: "";
-
-  position: absolute;
-
-  inset: 0;
-
-  pointer-events: none;
-
-  border-radius: inherit;
-
-  box-shadow:
-    inset 0 0 0 1px rgba(255, 255, 255, 0.16);
-
-  z-index: 0;
-}
-
-/* =========================================================
-   CONTENT MUST STAY ABOVE GLASS
-   ========================================================= */
-
-.document-paper>* {
-  position: relative;
-
-  z-index: 2;
-}
-
-/* =========================================================
-   ACTIVE PAGE
-   ========================================================= */
 
 .document-paper.active-page-sheet {
-  background:
-    rgba(255, 255, 255, 0.15);
-
-  border-color:
-    rgba(255, 255, 255, 0.58);
-
-  box-shadow:
-    0 35px 95px rgba(15, 23, 42, 0.20),
-    0 10px 35px rgba(70, 80, 160, 0.08),
-    inset 0 1px 0 rgba(255, 255, 255, 0.72),
-    inset 0 -1px 0 rgba(255, 255, 255, 0.10);
+  box-shadow: var(--shadow-lg);
+  border-color: #cbd5e1;
 }
 
 /* =========================================================
-   DO NOT ADD PURPLE TO DOCUMENT
-   ========================================================= */
-
-.document-paper,
-.document-paper.active-page-sheet {
-  background-color: rgba(255, 255, 255, 0.14);
-}
-
-/* =========================================================
-   CLICK ANIMATION
-   ========================================================= */
-
-.document-paper.liquid-click-anim,
-.document-paper:active {
-  animation:
-    liquidPulse 0.5s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-@keyframes liquidPulse {
-  0% {
-    transform: scale(0.994);
-
-    box-shadow:
-      0 0 25px rgba(168, 85, 247, 0.10),
-      0 30px 90px rgba(15, 23, 42, 0.16);
-  }
-
-  50% {
-    transform: scale(1.003);
-
-    box-shadow:
-      0 0 30px rgba(99, 102, 241, 0.12),
-      0 35px 95px rgba(15, 23, 42, 0.18);
-  }
-
-  100% {
-    transform: scale(1);
-
-    box-shadow:
-      0 30px 90px rgba(15, 23, 42, 0.18);
-  }
-}
-
-/* =========================================================
-   DARK CANVAS
-   ========================================================= */
-
-.dark-canvas .document-paper {
-  background:
-    rgba(15, 23, 42, 0.48);
-
-  backdrop-filter:
-    blur(35px) saturate(140%);
-
-  -webkit-backdrop-filter:
-    blur(35px) saturate(140%);
-
-  border:
-    1px solid rgba(255, 255, 255, 0.25);
-
-  color: #f8fafc;
-
-  box-shadow:
-    0 30px 100px rgba(0, 0, 0, 0.60),
-    inset 0 1px 0 rgba(255, 255, 255, 0.20);
-}
-
-/* =========================================================
-   FLOW MODE
-   ========================================================= */
-
-.editor-wrapper.flow-mode .document-paper {
-  max-width: 100%;
-
-  min-height: auto;
-
-  box-shadow: none;
-}
-
-/* =========================================================
-   PAGE HEADER
+   MARKERS (Headers/Footers)
    ========================================================= */
 
 .page-header-marker {
   position: absolute;
-
   top: 25px;
-
   left: 80px;
   right: 80px;
-
   display: flex;
-
   justify-content: space-between;
-
   font-size: 11px;
-
   font-weight: 500;
-
-  font-family:
-    -apple-system,
-    BlinkMacSystemFont,
-    "Segoe UI",
-    Roboto,
-    sans-serif;
-
-  color:
-    rgba(30, 41, 59, 0.78);
-
-  border-bottom:
-    1px solid rgba(255, 255, 255, 0.34);
-
+  color: var(--text-secondary);
+  border-bottom: 1px solid var(--border-color);
   padding-bottom: 6px;
-
   user-select: none;
-
   z-index: 3;
 }
-
-.dark-canvas .page-header-marker {
-  color: #cbd5e1;
-
-  border-bottom-color:
-    rgba(255, 255, 255, 0.15);
-}
-
-/* =========================================================
-   PAGE FOOTER
-   ========================================================= */
 
 .page-footer-marker {
   position: absolute;
-
   bottom: 25px;
-
   left: 80px;
   right: 80px;
-
   text-align: center;
-
   font-size: 10px;
-
-  font-family:
-    -apple-system,
-    BlinkMacSystemFont,
-    "Segoe UI",
-    Roboto,
-    sans-serif;
-
-  color:
-    rgba(51, 65, 85, 0.78);
-
-  border-top:
-    1px solid rgba(255, 255, 255, 0.30);
-
+  color: var(--text-secondary);
+  border-top: 1px solid var(--border-color);
   padding-top: 6px;
-
   user-select: none;
-
   z-index: 3;
-}
-
-.dark-canvas .page-footer-marker {
-  color: #94a3b8;
-
-  border-top-color:
-    rgba(255, 255, 255, 0.15);
 }
 
 /* =========================================================
@@ -679,503 +131,88 @@
 
 .paperguard-tiptap-content {
   min-height: 900px;
-
   outline: none;
-
   position: relative;
-
   z-index: 2;
 }
 
 .secondary-page-content {
   min-height: 900px;
-
   outline: none;
-
   font-size: 15px;
-
   line-height: 1.75;
-
   color: #111827;
-
-  opacity: 1;
-
   position: relative;
-
   z-index: 2;
 }
-
-.dark-canvas .secondary-page-content {
-  color: #f8fafc;
-}
-
-/* =========================================================
-   CRITICAL:
-   TEXT MUST NEVER BE BLURRED
-   ========================================================= */
 
 .ProseMirror {
   outline: none;
-
   min-height: 850px;
-
   color: #111827;
-
-  opacity: 1;
-
-  filter: none;
-
   position: relative;
-
   z-index: 2;
 }
 
-.ProseMirror * {
-  opacity: 1;
-
-  filter: none;
-}
-
-.dark-canvas .ProseMirror {
-  color: #f8fafc;
-}
-
-/* =========================================================
-   HEADINGS
-   ========================================================= */
-
+/* Headings */
 .ProseMirror h1 {
   font-size: 24px;
-
   font-weight: 700;
-
   margin-top: 28px;
   margin-bottom: 16px;
-
   color: #111827;
-
-  opacity: 1;
-
-  border-bottom:
-    2px solid rgba(15, 23, 42, 0.10);
-
-  padding-bottom: 8px;
-}
-
-.dark-canvas .ProseMirror h1 {
-  color: #ffffff;
-
-  border-bottom-color:
-    rgba(255, 255, 255, 0.20);
 }
 
 .ProseMirror h2 {
   font-size: 18px;
-
   font-weight: 600;
-
   margin-top: 22px;
   margin-bottom: 12px;
-
   color: #111827;
-
-  opacity: 1;
 }
 
-.dark-canvas .ProseMirror h2 {
-  color: #ffffff;
-}
-
-/* =========================================================
-   PARAGRAPHS
-   ========================================================= */
-
+/* Paragraphs */
 .ProseMirror p {
   margin-bottom: 16px;
-
   font-size: 15px;
-
   line-height: 1.75;
-
   color: #111827;
-
-  opacity: 1;
 }
 
-.dark-canvas .ProseMirror p {
-  color: #f8fafc;
-}
-
-/* =========================================================
-   BLOCKQUOTE
-   ========================================================= */
-
-.ProseMirror blockquote {
-  border-left:
-    4px solid #6366f1;
-
-  margin: 18px 0;
-
-  padding: 10px 18px;
-
-  background:
-    rgba(255, 255, 255, 0.12);
-
-  backdrop-filter:
-    blur(14px);
-
-  -webkit-backdrop-filter:
-    blur(14px);
-
-  font-style: italic;
-
-  color: #1e293b;
-
-  border-radius:
-    0 8px 8px 0;
-
-  opacity: 1;
-}
-
-.dark-canvas .ProseMirror blockquote {
-  border-left-color:
-    #818cf8;
-
-  background:
-    rgba(255, 255, 255, 0.08);
-
-  color: #e2e8f0;
-}
-
-/* =========================================================
-   LISTS
-   ========================================================= */
-
-.ProseMirror ul,
-.ProseMirror ol {
-  padding-left: 24px;
-
-  margin-bottom: 16px;
-
-  color: #111827;
-
-  opacity: 1;
-}
-
-.dark-canvas .ProseMirror ul,
-.dark-canvas .ProseMirror ol {
-  color: #f8fafc;
-}
-
-.ProseMirror li {
-  margin-bottom: 6px;
-}
-
-/* =========================================================
-   AI CLAIM HIGHLIGHTS
-   ========================================================= */
-
-.ProseMirror mark {
-  padding: 3px 6px;
-
-  border-radius: 6px;
-
+/* Claim Highlight Overrides for cleaner look */
+mark.claim-mark {
+  background-color: transparent;
+  border-bottom: 2px solid;
+  padding-bottom: 1px;
+  border-radius: 0;
   cursor: pointer;
-
-  transition:
-    background 0.2s ease,
-    box-shadow 0.2s ease;
-
-  box-decoration-break: clone;
-
-  -webkit-box-decoration-break: clone;
-
-  opacity: 1;
-
-  filter: none;
+  transition: all 0.2s ease;
 }
 
-/* =========================================================
-   YELLOW CLAIM
-   ========================================================= */
-
-.ProseMirror mark.claim-yellow,
-.ProseMirror mark:not([class]) {
-  background:
-    rgba(253, 224, 71, 0.48);
-
-  color:
-    #713f12;
-
-  border-bottom:
-    2px dashed #ca8a04;
-
-  border-radius: 6px;
-
-  box-shadow:
-    0 0 10px rgba(250, 204, 21, 0.20);
-
-  opacity: 1;
+mark.claim-mark.claim-yellow,
+mark.claim-mark[style*="background-color: #fef08a"] {
+  border-bottom-color: var(--warning);
+  background-color: var(--warning-light);
+}
+mark.claim-mark.claim-green,
+mark.claim-mark[style*="background-color: #bbf7d0"] {
+  border-bottom-color: var(--success);
+  background-color: var(--success-light);
+}
+mark.claim-mark.claim-red,
+mark.claim-mark[style*="background-color: #fecaca"] {
+  border-bottom-color: var(--danger);
+  background-color: var(--danger-light);
 }
 
-.ProseMirror mark.claim-yellow:hover {
-  background:
-    rgba(250, 204, 21, 0.62);
-
-  box-shadow:
-    0 0 16px rgba(250, 204, 21, 0.35);
+mark.claim-mark:hover {
+  background-color: rgba(0,0,0,0.05);
 }
 
-/* =========================================================
-   GREEN CLAIM
-   ========================================================= */
-
-.ProseMirror mark.claim-green {
-  background:
-    rgba(134, 239, 172, 0.42);
-
-  color:
-    #14532d;
-
-  border-bottom:
-    2px dashed #16a34a;
-
-  opacity: 1;
-}
-
-/* =========================================================
-   RED CLAIM
-   ========================================================= */
-
-.ProseMirror mark.claim-red {
-  background:
-    rgba(254, 202, 202, 0.42);
-
-  color:
-    #7f1d1d;
-
-  border-bottom:
-    2px dashed #dc2626;
-
-  opacity: 1;
-}
-
-/* =========================================================
-   CITATION / FOOTNOTE MARKERS
-   ========================================================= */
-
-.ProseMirror sup {
-  font-size: 10px;
-
-  font-weight: 700;
-
-  padding: 1px 5px;
-
-  border-radius: 10px;
-
-  margin-left: 3px;
-
-  cursor: pointer;
-
-  user-select: none;
-
-  display: inline-block;
-
-  vertical-align: super;
-
-  opacity: 1;
-}
-
-.ProseMirror sup.yellow {
-  background:
-    #fef08a;
-
-  color:
-    #854d0e;
-}
-
-.ProseMirror sup.green {
-  background:
-    #bbf7d0;
-
-  color:
-    #166534;
-}
-
-.ProseMirror sup.red {
-  background:
-    #fecaca;
-
-  color:
-    #991b1b;
-}
-
-/* =========================================================
-   SELECTION
-   ========================================================= */
-
-.ProseMirror ::selection {
-  background:
-    rgba(99, 102, 241, 0.25);
-
-  color: inherit;
-}
-
-/* =========================================================
-   SCROLLBAR
-   ========================================================= */
-
-.editor-workspace::-webkit-scrollbar,
-.editor-wrapper::-webkit-scrollbar {
-  width: 10px;
-}
-
-.editor-workspace::-webkit-scrollbar-track,
-.editor-wrapper::-webkit-scrollbar-track {
-  background:
-    rgba(255, 255, 255, 0.06);
-}
-
-.editor-workspace::-webkit-scrollbar-thumb,
-.editor-wrapper::-webkit-scrollbar-thumb {
-  background:
-    rgba(255, 255, 255, 0.28);
-
-  border-radius: 10px;
-
-  border:
-    2px solid transparent;
-
-  background-clip: padding-box;
-}
-
-.editor-workspace::-webkit-scrollbar-thumb:hover,
-.editor-wrapper::-webkit-scrollbar-thumb:hover {
-  background:
-    rgba(255, 255, 255, 0.40);
-
-  background-clip: padding-box;
-}
-
-/* =========================================================
-   RESPONSIVE
-   ========================================================= */
-
-@media (max-width: 1100px) {
-  .document-paper {
-    max-width: 760px;
-
-    padding:
-      60px 65px;
-  }
-
-  .ms-word-ruler {
-    max-width: 760px;
-  }
-
-  .editor-zoom-container {
-    max-width: 760px;
-  }
-}
-
-@media (max-width: 800px) {
-
-  .editor-workspace,
-  .editor-wrapper {
-    padding:
-      16px 10px 40px;
-  }
-
-  .document-paper {
-    max-width: 100%;
-
-    min-height: 900px;
-
-    padding:
-      55px 40px;
-  }
-
-  .ms-word-ruler {
-    max-width: 100%;
-  }
-
-  .editor-zoom-container {
-    max-width: 100%;
-  }
-
-  .page-header-marker {
-    left: 40px;
-    right: 40px;
-  }
-
-  .page-footer-marker {
-    left: 40px;
-    right: 40px;
-  }
-}
-
-@media (max-width: 600px) {
-  .document-paper {
-    padding:
-      50px 25px;
-
-    border-radius: 8px;
-  }
-
-  .page-header-marker {
-    left: 25px;
-    right: 25px;
-
-    font-size: 9px;
-  }
-
-  .page-footer-marker {
-    left: 25px;
-    right: 25px;
-
-    font-size: 9px;
-  }
-
-  .ProseMirror {
-    min-height: 750px;
-  }
-
-  .ProseMirror p {
-    font-size: 14px;
-  }
-
-  .ProseMirror h1 {
-    font-size: 21px;
-  }
-
-  .ProseMirror h2 {
-    font-size: 17px;
-  }
-}
-
-/* Phase 2 – Claim marks */
-mark.claim-mark,
-mark.claim-yellow {
-  background-color: #fef3c7;
-  border-bottom: 2px solid #f59e0b;
-  padding: 1px 2px;
-  border-radius: 2px;
-}
-mark.claim-green {
-  background-color: #d1fae5;
-  border-bottom: 2px solid #10b981;
-  padding: 1px 2px;
-  border-radius: 2px;
-}
-mark.claim-red {
-  background-color: #fce7f3;
-  border-bottom: 2px solid #ec4899;
-  padding: 1px 2px;
-  border-radius: 2px;
-}
-mark.claim-gray {
-  background-color: #f4f4f5;
-  border-bottom: 2px solid #a1a1aa;
-  padding: 1px 2px;
-  border-radius: 2px;
+/* Active Claim Selection */
+mark.claim-mark.active-claim {
+  border: 2px solid var(--primary-blue);
+  border-radius: 4px;
+  background-color: var(--primary-blue-light) !important;
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
 }
