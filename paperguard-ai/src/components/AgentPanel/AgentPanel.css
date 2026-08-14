@@ -127,3 +127,109 @@
   background: rgba(255, 255, 255, 0.50);
   border-color: rgba(255, 255, 255, 0.80);
 }
+
+.agent-panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.agent-panel-header h3 {
+  font-size: 11px;
+  font-weight: 700;
+  color: #ffffff;
+  margin: 0;
+}
+
+.agent-live-badge {
+  font-size: 9px;
+  font-weight: 700;
+  color: #22c55e;
+  background: rgba(34, 197, 94, 0.2);
+  padding: 2px 6px;
+  border-radius: 4px;
+  border: 1px solid rgba(34, 197, 94, 0.4);
+}
+
+.agent-verdict-badge {
+  font-size: 9px;
+  font-weight: 700;
+  text-transform: uppercase;
+  background: rgba(255, 255, 255, 0.2);
+  padding: 2px 6px;
+  border-radius: 4px;
+  color: #ffffff;
+}
+
+.agent-timeline {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.agent-row {
+  background: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 6px;
+  padding: 6px 8px;
+}
+
+.agent-row.status-completed {
+  border-color: rgba(34, 197, 94, 0.4);
+}
+
+.agent-row.status-running {
+  border-color: rgba(59, 130, 246, 0.5);
+  background: rgba(59, 130, 246, 0.15);
+}
+
+.agent-row.status-error {
+  border-color: rgba(239, 68, 68, 0.4);
+}
+
+.agent-row-top {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.agent-name {
+  font-size: 10px;
+  font-weight: 600;
+  color: #ffffff;
+  flex: 1;
+}
+
+.agent-time {
+  font-size: 8px;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.agent-detail {
+  font-size: 9px;
+  color: rgba(255, 255, 255, 0.85);
+  margin: 4px 0 0 20px;
+  line-height: 1.2;
+}
+
+.agent-empty {
+  font-size: 10px;
+  color: rgba(255, 255, 255, 0.7);
+  text-align: center;
+  margin-top: 20px;
+}
+
+.spin-icon {
+  animation: agentSpin 1s linear infinite;
+}
+
+@keyframes agentSpin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+

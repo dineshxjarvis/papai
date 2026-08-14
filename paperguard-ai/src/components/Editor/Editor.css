@@ -1152,3 +1152,30 @@
     font-size: 17px;
   }
 }
+
+/* Phase 2 – Claim marks */
+mark.claim-mark,
+mark.claim-yellow {
+  background-color: #fef3c7;
+  border-bottom: 2px solid #f59e0b;
+  padding: 1px 2px;
+  border-radius: 2px;
+}
+mark.claim-green {
+  background-color: #d1fae5;
+  border-bottom: 2px solid #10b981;
+  padding: 1px 2px;
+  border-radius: 2px;
+}
+mark.claim-red {
+  background-color: #fce7f3;
+  border-bottom: 2px solid #ec4899;
+  padding: 1px 2px;
+  border-radius: 2px;
+}
+mark.claim-gray {
+  background-color: #f4f4f5;
+  border-bottom: 2px solid #a1a1aa;
+  padding: 1px 2px;
+  border-radius: 2px;
+}

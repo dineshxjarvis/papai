@@ -1,6 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useCallback } from "react";
 import useEditor from "./hooks/useEditor";
-import { claims as initialClaims } from "./data/claims";
+import useClaimLog from "./hooks/useClaimLog";
+import useClaimDetection from "./hooks/useClaimDetection";
+import useClaimVerification from "./hooks/useClaimVerification";
+import { createPhase3Handlers } from "./phase3/wireAppHandlers";
 
 import Ribbon from "./components/Ribbon/Ribbon";
 import DocumentEditor from "./components/Editor/DocumentEditor";
@@ -15,13 +18,11 @@ import "./App.css";
 
 export default function App() {
   const editor = useEditor();
+  const claimLog = useClaimLog([]);
 
   const [docTitle, setDocTitle] = useState("Research_Paper_Draft.docx");
   const [leftPanelOpen, setLeftPanelOpen] = useState(false);
   const [rightPanelOpen, setRightPanelOpen] = useState(true);
-
-  const [claimsList, setClaimsList] = useState(initialClaims);
-  const [activeClaimId, setActiveClaimId] = useState(null);
 
   const [fontFamily, setFontFamily] = useState("Times New Roman");
   const [fontSize, setFontSize] = useState("12");
@@ -29,133 +30,149 @@ export default function App() {
   const [darkModeCanvas, setDarkModeCanvas] = useState(false);
   const [zoom, setZoom] = useState(100);
 
-  // Multi-page document state
   const [pages, setPages] = useState([{ id: 1, content: "" }]);
   const [activePageIndex, setActivePageIndex] = useState(0);
 
   const [isScanning, setIsScanning] = useState(false);
+  const [scanProgress, setScanProgress] = useState("");
   const [toastMessage, setToastMessage] = useState("");
+  const [agentTrace, setAgentTrace] = useState([]);
 
-  const showToast = (msg) => {
+  const showToast = useCallback((msg) => {
     setToastMessage(msg);
-    setTimeout(() => setToastMessage(""), 3000);
-  };
+    setTimeout(() => setToastMessage(""), 3200);
+  }, []);
 
-  // Add new A4 Page immediately after current page
+  // Phase 2 detection
+  const detection = useClaimDetection(editor, claimLog, {
+    enabled: true,
+    provider: "auto",
+    onProgress: (stage, detail) => {
+      setScanProgress(`${stage}: ${detail}`);
+    },
+    onError: (err) => {
+      showToast(`Detection error: ${err.message}`);
+      setIsScanning(false);
+    },
+  });
+
+  // Phase 3 verification
+  const {
+    verifyClaim,
+    cancel: cancelVerification,
+    isVerifying,
+    activeRun,
+    lastResult,
+  } = useClaimVerification({
+    provider: "auto",
+    useMock: false,
+  });
+
+  const { handleVerifyClaim } = createPhase3Handlers({
+    claimLog,
+    verifyClaim,
+    setAgentTrace,
+    setRightPanelOpen,
+    setIsScanning,
+    showToast,
+  });
+
   const handleAddPage = () => {
     const newPageObj = {
       id: Date.now(),
-      content: `<p>Start writing on Page ${pages.length + 1}...</p>`
+      content: `<p>Start writing on Page ${pages.length + 1}...</p>`,
     };
     setPages((prev) => [...prev, newPageObj]);
     setActivePageIndex(pages.length);
-
-    if (editor) {
-      insertPageBreak(editor);
-    }
+    if (editor) insertPageBreak(editor);
     showToast(`Added new A4 Page ${pages.length + 1}`);
   };
 
-  // Delete page by index
   const handleDeletePage = (indexToDelete) => {
     if (pages.length <= 1) {
       showToast("Cannot delete the last remaining page.");
       return;
     }
     setPages((prev) => prev.filter((_, idx) => idx !== indexToDelete));
-    setActivePageIndex((prev) => Math.max(0, Math.min(prev, pages.length - 2)));
-
-    if (editor) {
-      removePageBreak(editor);
-    }
-    showToast(`Deleted Page ${indexToDelete + 1}`);
+    setActivePageIndex((prev) =>
+      Math.max(0, Math.min(prev, pages.length - 2))
+    );
+    if (editor) removePageBreak(editor);
+    showToast("Page deleted");
   };
 
-  // Page content update handler
-  const handlePageContentChange = (index, newHtml) => {
-    setPages((prev) =>
-      prev.map((p, idx) => (idx === index ? { ...p, content: newHtml } : p))
+  const handlePageContentChange = () => {};
+
+  const handleAnalyzeAll = async () => {
+    if (!editor) return;
+    setIsScanning(true);
+    setRightPanelOpen(true);
+    setScanProgress("Starting full document scan…");
+    showToast("Scanning document for claims…");
+
+    const found = await detection.detectAll();
+
+    setIsScanning(false);
+    setScanProgress("");
+    showToast(
+      found.length
+        ? `Found ${found.length} claim${found.length > 1 ? "s" : ""}`
+        : "No claims detected above threshold"
     );
   };
 
-  // Run full document scan with 5 AI Agents
-  const handleAnalyzeAll = () => {
-    setIsScanning(true);
-    setRightPanelOpen(true);
-    showToast("5 AI Agents scanning document claims...");
-
-    setTimeout(() => {
-      setIsScanning(false);
-      showToast("Full Document Analysis Complete: 3 Claims Verified!");
-    }, 1500);
-  };
-
-  // Analyze highlighted text in editor
-  const handleAnalyzeSelection = () => {
+  const handleAnalyzeSelection = async () => {
     if (!editor) return;
-
-    const { from, to } = editor.state.selection;
-    let selectedText = editor.state.doc.textBetween(from, to, " ");
-
-    if (!selectedText || selectedText.trim().length === 0) {
-      selectedText = "CNNs achieve higher accuracy than traditional machine learning algorithms in medical image classification.";
-    }
-
     setIsScanning(true);
     setRightPanelOpen(true);
+    setScanProgress("Analyzing selection…");
 
-    setTimeout(() => {
-      const newId = claimsList.length + 1;
-      const newClaim = {
-        id: newId,
-        text: selectedText.trim(),
-        status: "Supported",
-        confidence: 88,
-        color: "green",
-        type: "green"
-      };
+    const found = await detection.detectSelection();
 
-      setClaimsList((prev) => [newClaim, ...prev]);
-      setActiveClaimId(newId);
-
-      // Highlight the selection in editor
-      const markHtml = `<mark class="claim-green">${selectedText}</mark><sup class="claim-number green">${newId}</sup>`;
-      editor.chain().focus().insertContent(markHtml).run();
-
-      setIsScanning(false);
-      showToast(`Analyzed text! Added Claim #${newId} (Supported, 88% Conf.)`);
-    }, 1000);
+    setIsScanning(false);
+    setScanProgress("");
+    showToast(
+      found.length
+        ? `Added ${found.length} claim${found.length > 1 ? "s" : ""}`
+        : "No claim detected in selection"
+    );
   };
 
-  // Focus claim in document editor when clicked in AI panel
   const handleSelectClaim = (claimOrText) => {
     if (!editor) return;
 
-    let targetText = typeof claimOrText === "string" ? claimOrText : claimOrText.text;
-    let claimId = typeof claimOrText === "object" ? claimOrText.id : null;
+    const claim =
+      typeof claimOrText === "object"
+        ? claimOrText.raw || claimOrText
+        : claimLog.claims.find((c) => c.text === claimOrText);
 
-    if (claimId) {
-      setActiveClaimId(claimId);
-    }
+    if (claim?.id) claimLog.setActiveClaimId(claim.id);
 
-    const docText = editor.getText();
-    const index = docText.indexOf(targetText);
+    const targetText =
+      typeof claimOrText === "string" ? claimOrText : claimOrText.text;
 
-    if (index !== -1) {
-      editor.chain().focus().setTextSelection({
-        from: index + 1,
-        to: index + 1 + targetText.length
-      }).run();
-      showToast(`Selected Claim in manuscript`);
-    } else {
-      showToast(`Claim text focused`);
+    if (targetText) {
+      const docText = editor.state.doc.textContent;
+      const index = docText.indexOf(targetText);
+
+      if (index !== -1) {
+        editor
+          .chain()
+          .focus()
+          .setTextSelection({
+            from: index + 1,
+            to: index + 1 + targetText.length,
+          })
+          .run();
+        showToast("Selected claim in manuscript");
+      } else {
+        showToast("Claim text focused");
+      }
     }
   };
 
-  // Insert structured benchmark comparison table into editor
   const handleInsertTable = () => {
     if (!editor) return;
-
     const tableHtml = `
       <div class="figure-box">
         <h3>Table 1: Performance Benchmarks on Medical Imaging Datasets</h3>
@@ -195,12 +212,10 @@ export default function App() {
         </table>
       </div>
     `;
-
     editor.chain().focus().insertContent(tableHtml).run();
     showToast("Inserted Benchmark Table into manuscript!");
   };
 
-  // Insert citation into document
   const handleInsertCitation = () => {
     if (!editor) return;
     const citationHtml = ` <sup>[Citation: He et al., CVPR 2016]</sup> `;
@@ -210,10 +225,8 @@ export default function App() {
 
   return (
     <div className="app-container">
-      {/* Motion Gradient Background */}
       <MotionBackground />
 
-      {/* MS Word Toolbar Ribbon */}
       <Ribbon
         editor={editor}
         onAnalyzeAll={handleAnalyzeAll}
@@ -235,16 +248,13 @@ export default function App() {
         showToast={showToast}
       />
 
-      {/* Main Layout Area */}
       <main className="main-content-layout">
-        {/* Left Navigation Drawer Panel */}
         <LeftPanel
           open={leftPanelOpen}
           onClose={() => setLeftPanelOpen(false)}
           editor={editor}
         />
 
-        {/* Main Multi-Page Document Canvas & Page Navigation Sidebar */}
         <section className="document-editor-section">
           <DocumentEditor
             editor={editor}
@@ -264,24 +274,33 @@ export default function App() {
           />
         </section>
 
-        {/* Right AI & Agent Panel Drawer */}
         <aside className={`right-panel-drawer ${rightPanelOpen ? "open" : ""}`}>
           <div className="drawer-flex-wrapper">
             <AIPanel
-              claims={claimsList}
-              activeClaimId={activeClaimId}
+              claims={claimLog.uiClaims}
+              activeClaimId={claimLog.activeClaimId}
               onSelectClaim={handleSelectClaim}
+              onVerifyClaim={handleVerifyClaim}
               onAnalyzeSelection={handleAnalyzeSelection}
               onClose={() => setRightPanelOpen(false)}
-              isScanning={isScanning}
+              isScanning={isScanning || isVerifying}
+              scanProgress={scanProgress}
+              verificationResult={lastResult}
+              activeClaim={
+                claimLog.claims.find((c) => c.id === claimLog.activeClaimId) ||
+                null
+              }
             />
 
-            <AgentPanel />
+            <AgentPanel
+              trace={agentTrace}
+              activeRun={activeRun}
+              isRunning={isVerifying}
+            />
           </div>
         </aside>
       </main>
 
-      {/* Bottom Status Bar */}
       <StatusBar
         editor={editor}
         zoom={zoom}
@@ -290,7 +309,6 @@ export default function App() {
         activePageIndex={activePageIndex}
       />
 
-      {/* Notification Toast */}
       {toastMessage && (
         <div className="app-toast-notification">
           <span>{toastMessage}</span>

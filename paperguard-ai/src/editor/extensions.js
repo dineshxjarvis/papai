@@ -14,6 +14,7 @@ import TableCell from "@tiptap/extension-table-cell";
 import Image from "@tiptap/extension-image";
 import Link from "@tiptap/extension-link";
 import { PageBreak } from "./PageBreakExtension";
+import { ClaimMark } from "../claim-detection/ClaimMark";
 
 export const editorExtensions = [
   StarterKit,
@@ -43,4 +44,5 @@ export const editorExtensions = [
     types: ["heading", "paragraph"],
   }),
   PageBreak,
+  ClaimMark,
 ];

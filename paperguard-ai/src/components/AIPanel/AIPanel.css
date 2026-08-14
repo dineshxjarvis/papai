@@ -285,3 +285,82 @@
   border-color: rgba(255, 255, 255, 0.9);
   transform: translateY(-1px);
 }
+
+/* Phase 3 Verification Styles */
+.btn-verify {
+  margin-top: 6px;
+  font-size: 11px;
+  padding: 4px 8px;
+  border-radius: 6px;
+  border: 1px solid #c4b5fd;
+  background: #ede9fe;
+  color: #5b21b6;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.15s ease;
+}
+.btn-verify:hover {
+  background: #ddd6fe;
+}
+
+.verification-result {
+  background: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 8px;
+  padding: 10px;
+  margin: 10px 0;
+  font-size: 12px;
+  color: #ffffff;
+}
+.verification-result h4 {
+  margin: 0 0 6px 0;
+  font-size: 13px;
+  color: #ffffff;
+}
+.verification-result h5 {
+  margin: 8px 0 4px 0;
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.verdict-banner {
+  padding: 10px;
+  border-radius: 8px;
+  margin: 8px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  color: #1e1b4b;
+}
+.verdict-supported { background: #d1fae5; color: #065f46; }
+.verdict-partially_supported { background: #fef3c7; color: #92400e; }
+.verdict-contradicted { background: #fce7f3; color: #9d174d; }
+.verdict-insufficient { background: #f4f4f5; color: #3f3f46; }
+
+.evidence-card {
+  border: 1px solid #e4e4e7;
+  border-radius: 8px;
+  padding: 8px;
+  margin-bottom: 8px;
+  font-size: 12px;
+  background: rgba(255, 255, 255, 0.9);
+  color: #18181b;
+}
+.evidence-card.support { border-left: 3px solid #10b981; }
+.evidence-card.contradict { border-left: 3px solid #ec4899; }
+.evidence-card p.title { font-weight: 700; margin: 0 0 4px 0; font-size: 11px; }
+.evidence-card p.span { font-style: italic; margin: 0 0 4px 0; font-size: 11px; }
+.evidence-card a { color: #2563eb; text-decoration: underline; font-size: 10px; }
+
+.muted { color: rgba(255, 255, 255, 0.7); font-size: 11px; font-style: italic; }
+
+.agent-live-badge {
+  background: #dc2626;
+  color: white;
+  font-size: 10px;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+.agent-detail { font-size: 11px; color: #71717a; margin: 2px 0 0 20px; }
+.agent-time { margin-left: auto; font-size: 10px; color: #a1a1aa; }
+

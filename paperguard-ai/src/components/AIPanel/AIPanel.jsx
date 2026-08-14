@@ -7,35 +7,46 @@ import {
   CheckCircle,
   AlertTriangle,
   XCircle,
-  ExternalLink,
+  Search,
   BookOpen,
   RefreshCw,
-  Search,
-  Filter
 } from "lucide-react";
 
+import VerificationResult from "./VerificationResult";
 import "./AIPanel.css";
 
 export default function AIPanel({
   claims = [],
   activeClaimId,
   onSelectClaim,
+  onVerifyClaim,
   onAnalyzeSelection,
   onClose,
-  isScanning
+  isScanning,
+  verificationResult,
+  activeClaim,
 }) {
   const [activeTab, setActiveTab] = useState("live");
   const [filterType, setFilterType] = useState("all");
 
-  const supportingCount = claims.filter((c) => c.color === "green" || c.type === "green" || c.status === "Supported").length;
-  const partialCount = claims.filter((c) => c.color === "yellow" || c.type === "yellow" || c.status === "Partially Supported").length;
-  const contradictingCount = claims.filter((c) => c.color === "red" || c.type === "red" || c.status === "Contradicting").length;
+  const supportingCount = claims.filter(
+    (c) => c.color === "green" || c.type === "green" || c.status === "Supported"
+  ).length;
+  const partialCount = claims.filter(
+    (c) => c.color === "yellow" || c.type === "yellow" || c.status === "Partially Supported"
+  ).length;
+  const contradictingCount = claims.filter(
+    (c) => c.color === "red" || c.type === "red" || c.status === "Contradicting"
+  ).length;
 
   const filteredClaims = claims.filter((claim) => {
     if (filterType === "all") return true;
-    if (filterType === "green") return claim.color === "green" || claim.type === "green" || claim.status === "Supported";
-    if (filterType === "yellow") return claim.color === "yellow" || claim.type === "yellow" || claim.status === "Partially Supported";
-    if (filterType === "red") return claim.color === "red" || claim.type === "red" || claim.status === "Contradicting";
+    if (filterType === "green")
+      return claim.color === "green" || claim.type === "green" || claim.status === "Supported";
+    if (filterType === "yellow")
+      return claim.color === "yellow" || claim.type === "yellow" || claim.status === "Partially Supported";
+    if (filterType === "red")
+      return claim.color === "red" || claim.type === "red" || claim.status === "Contradicting";
     return true;
   });
 
@@ -145,7 +156,7 @@ export default function AIPanel({
                     onClick={() => onSelectClaim && onSelectClaim(claim)}
                   >
                     <div className={`claim-number-badge ${color}`}>
-                      {claim.id}
+                      {typeof claim.id === "string" ? claim.id.slice(0, 4) : claim.id}
                     </div>
 
                     <div className="claim-card-body">
@@ -163,6 +174,17 @@ export default function AIPanel({
                           Confidence: <strong>{claim.confidence}%</strong>
                         </span>
                       </div>
+
+                      <button
+                        type="button"
+                        className="btn-verify"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onVerifyClaim?.(claim.raw || claim);
+                        }}
+                      >
+                        Verify Evidence
+                      </button>
                     </div>
 
                     <ArrowRight size={15} className="arrow-nav" />
@@ -170,6 +192,11 @@ export default function AIPanel({
                 );
               })}
             </div>
+
+            {/* Show Me Why / verdict block when verificationResult exists */}
+            {verificationResult && verificationResult.claimId === activeClaimId && (
+              <VerificationResult result={verificationResult} />
+            )}
 
             {/* Action Button */}
             <button
@@ -202,7 +229,7 @@ export default function AIPanel({
                 <div key={claim.id} className="detailed-claim-box">
                   <div className="detailed-header">
                     <span className={`status-pill ${claim.color || claim.type}`}>
-                      Claim #{claim.id} • {claim.status}
+                      Claim • {claim.status}
                     </span>
                     <span className="conf-badge">{claim.confidence}% Conf.</span>
                   </div>
@@ -210,6 +237,12 @@ export default function AIPanel({
                   <div className="detailed-actions">
                     <button onClick={() => onSelectClaim(claim)}>
                       <Search size={12} /> Locate in Text
+                    </button>
+                    <button
+                      className="btn-verify"
+                      onClick={() => onVerifyClaim?.(claim.raw || claim)}
+                    >
+                      Verify Evidence
                     </button>
                   </div>
                 </div>
@@ -220,7 +253,7 @@ export default function AIPanel({
 
         {activeTab === "evidence" && (
           <div className="evidence-tab-pane">
-            <div className="evidence-card">
+            <div className="evidence-card support">
               <div className="evidence-source">
                 <BookOpen size={14} className="icon-blue" />
                 <span>arXiv:2308.09124 • Medical AI Journal</span>
@@ -229,12 +262,12 @@ export default function AIPanel({
                 "ResNet architectures demonstrate statistically significant top-1 accuracy gains over VGG networks across 12 medical image benchmarks (p &lt; 0.01)."
               </p>
               <div className="evidence-footer">
-                <span>Matched to Claim #2</span>
+                <span>Matched to Claim</span>
                 <span className="score">85% Similarity</span>
               </div>
             </div>
 
-            <div className="evidence-card">
+            <div className="evidence-card contradict">
               <div className="evidence-source">
                 <BookOpen size={14} className="icon-purple" />
                 <span>PubMed ID: 3849102 • Clinical Machine Learning</span>
@@ -243,7 +276,7 @@ export default function AIPanel({
                 "On small-sample clinical cohorts (N &lt; 500), deep networks exhibit over-fitting risks and fail to achieve statistical superiority over linear classifiers."
               </p>
               <div className="evidence-footer">
-                <span>Matched to Claim #3</span>
+                <span>Matched to Claim</span>
                 <span className="score">72% Similarity</span>
               </div>
             </div>
@@ -254,15 +287,15 @@ export default function AIPanel({
           <div className="trace-tab-pane">
             <div className="log-line success">
               <span className="timestamp">11:27:01</span>
-              <span>[Claim Detector] Identified 3 atomic research claims</span>
+              <span>[Claim Detector] Identified atomic research claims</span>
             </div>
             <div className="log-line info">
               <span className="timestamp">11:27:03</span>
-              <span>[Research Agent] Queried Semantic Scholar API for 14 papers</span>
+              <span>[Research Agent] Queried Semantic Scholar API for papers</span>
             </div>
             <div className="log-line warning">
               <span className="timestamp">11:27:05</span>
-              <span>[Adversarial Agent] Detected potential contradiction in Claim #3</span>
+              <span>[Adversarial Agent] Detected potential contradiction</span>
             </div>
             <div className="log-line success">
               <span className="timestamp">11:27:07</span>
