@@ -13,6 +13,9 @@ import {
 } from "lucide-react";
 
 import VerificationResult from "./VerificationResult";
+import VerificationResultCard from "../Phase4/VerificationResultCard";
+import ShowMeWhy from "../Phase4/ShowMeWhy";
+import { buildPhase4ViewModel } from "../../phase4/buildPhase4ViewModel";
 import "./AIPanel.css";
 
 export default function AIPanel({
@@ -28,6 +31,7 @@ export default function AIPanel({
 }) {
   const [activeTab, setActiveTab] = useState("live");
   const [filterType, setFilterType] = useState("all");
+  const [showWhyModal, setShowWhyModal] = useState(false);
 
   const supportingCount = claims.filter(
     (c) => c.color === "green" || c.type === "green" || c.status === "Supported"
@@ -50,8 +54,14 @@ export default function AIPanel({
     return true;
   });
 
+  const p4ViewModel = React.useMemo(() => {
+    if (!verificationResult) return null;
+    const targetClaim = activeClaim || { id: activeClaimId, text: verificationResult.claimText || "" };
+    return buildPhase4ViewModel(targetClaim, verificationResult);
+  }, [verificationResult, activeClaim, activeClaimId]);
+
   return (
-    <section className="ai-panel">
+    <section className="ai-panel" style={{ position: "relative", overflow: "hidden" }}>
       {/* Panel Header */}
       <div className="ai-header">
         <div className="ai-header-title">
@@ -193,9 +203,24 @@ export default function AIPanel({
               })}
             </div>
 
-            {/* Show Me Why / verdict block when verificationResult exists */}
-            {verificationResult && verificationResult.claimId === activeClaimId && (
+            {/* Phase 4 Verification Result Card */}
+            {p4ViewModel && (
+              <VerificationResultCard
+                vm={p4ViewModel}
+                stale={false}
+                onVerifyCurrent={() => onVerifyClaim?.(activeClaim)}
+                onOpenWhy={() => setShowWhyModal(true)}
+              />
+            )}
+
+            {/* Legacy/Fallback Verification Breakdown */}
+            {verificationResult && verificationResult.claimId === activeClaimId && !p4ViewModel && (
               <VerificationResult result={verificationResult} />
+            )}
+
+            {/* Show Me Why Modal / Panel */}
+            {showWhyModal && p4ViewModel && (
+              <ShowMeWhy audit={p4ViewModel.audit} onClose={() => setShowWhyModal(false)} />
             )}
 
             {/* Action Button */}

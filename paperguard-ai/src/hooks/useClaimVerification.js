@@ -1,5 +1,5 @@
 import { useState, useCallback, useRef } from "react";
-import { runVerificationPipeline } from "../phase3/pipeline.js";
+import { runVerification } from "../phase3/runVerificationWithLangGraph.js";
 
 export default function useClaimVerification(options = {}) {
   const { provider = "auto", useMock = false } = options;
@@ -19,7 +19,7 @@ export default function useClaimVerification(options = {}) {
       setActiveRun({ claimId: claim.id, status: "running" });
 
       try {
-        const result = await runVerificationPipeline(claim, {
+        const result = await runVerification(claim, {
           signal: controller.signal,
           provider,
           useMock,

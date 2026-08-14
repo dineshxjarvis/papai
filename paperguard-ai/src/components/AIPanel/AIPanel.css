@@ -261,6 +261,35 @@
   overflow: hidden;
 }
 
+.claim-meta-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 4px;
+  margin-bottom: 4px;
+  flex-wrap: wrap;
+}
+
+.status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+.status-pill.green { background: #dcfce7; color: #15803d; }
+.status-pill.yellow { background: #fef9c3; color: #a16207; }
+.status-pill.red { background: #fee2e2; color: #b91c1c; }
+
+.confidence-meter {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.95);
+  font-weight: 500;
+}
+
 .analyze-selection-btn {
   width: 100%;
   height: 40px;
@@ -277,7 +306,8 @@
   cursor: pointer;
   transition: all 0.2s ease;
   box-shadow: 0 0 15px rgba(168, 85, 247, 0.4);
-  margin-top: 4px;
+  margin-top: 8px;
+  flex-shrink: 0;
 }
 
 .analyze-selection-btn:hover {
@@ -363,4 +393,3 @@
 }
 .agent-detail { font-size: 11px; color: #71717a; margin: 2px 0 0 20px; }
 .agent-time { margin-left: auto; font-size: 10px; color: #a1a1aa; }
-
